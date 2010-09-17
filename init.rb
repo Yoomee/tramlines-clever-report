@@ -3,7 +3,18 @@ ActiveRecord::Base.class_eval do
   
   class << self
     
-    def has_clever_query(name, options = {})
+    def has_clever_reports_with(*args)
+      send(:include, HasCleverReports)
+      self.associations_for_clever_reports = args.flatten.collect(&:to_s)
+      associations_for_clever_reports.each do |association|
+        define_method "number_of_#{association}" do
+          send(association).size
+        end
+      end
+    end
+    alias_method :has_clever_reports, :has_clever_reports_with
+    
+    def has_clever_filter(name, options = {})
       
     end
     

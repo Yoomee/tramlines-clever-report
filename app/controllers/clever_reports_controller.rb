@@ -21,11 +21,13 @@ class CleverReportsController < ApplicationController
   def create
     @report = CleverReport.new(params[:clever_report])
     if @report.save
-      flash[:notice] = "Successfully created report."
-      redirect_to step_two_clever_report_path(@report)
-    else
-      render :action => 'new'
+      if @report.last_step?
+        flash[:notice] = "Finished."
+        return redirect_to(@report)
+      end
+      @report.step_num += 1
     end
+    render :action => 'new'
   end
   
   def edit
@@ -34,11 +36,13 @@ class CleverReportsController < ApplicationController
   
   def update
     if @report.update_attributes(params[:clever_report])
-      flash[:notice] = "Successfully updated report."
-      redirect_to @report
-    else
-      render :action => 'edit'
+      if @report.last_step?
+        flash[:notice] = "Finished."
+        return redirect_to(@report)
+      end
+      @report.step_num += 1
     end
+    render :action => 'edit'
   end
   
   def destroy

@@ -1,4 +1,4 @@
-class CleverQuery < ActiveRecord::Base
+class CleverFilter < ActiveRecord::Base
   
   belongs_to :report, :class_name => "CleverReport"
   

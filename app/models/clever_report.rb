@@ -3,7 +3,7 @@ class CleverReport < ActiveRecord::Base
   REPORTABLE_MODELS = %w{Contact Donation Event Campaign}
   STEP_TITLES = ["Step 1: Choose source", "Step 2: Include Fields", "Step 3: Set filters"]
   
-  has_many :queries, :class_name => "CleverQuery", :foreign_key => "report_id" do
+  has_many :filters, :class_name => "CleverFilter", :foreign_key => "report_id" do
     def call_string
       all.collect(&:call_string).join(".")
     end
@@ -13,8 +13,9 @@ class CleverReport < ActiveRecord::Base
   
   validates_presence_of :name
   validates_presence_of :class_name
+  validates_uniqueness_of :name
 
-  attr_accessor :step_num
+  attr_writer :step_num
   
   class << self
 
@@ -23,9 +24,22 @@ class CleverReport < ActiveRecord::Base
     end
     
     def possible_field_names(class_name)
+      return [] if class_name.nil?
       class_name.constantize.column_names.reject! {|name| name.in? %w{id}}
     end    
     
+  end
+
+  def association_names
+    class_name.constantize::associations_for_clever_reports || []
+  end
+
+  def field_names=(value)
+    write_attribute(:field_names, value.reject(&:blank?))
+  end
+
+  def field_names_from_association(association_name)
+    ["number_of_#{association_name}"]
   end
 
   def last_step?
@@ -40,6 +54,10 @@ class CleverReport < ActiveRecord::Base
     @results ||= get_results
   end
   
+  def step_num
+    @step_num.try(:to_i) || 1
+  end
+  
   def step_title
     STEP_TITLES[step_num - 1]
   end
@@ -50,7 +68,8 @@ class CleverReport < ActiveRecord::Base
   
   private
   def get_results
-    named_scope_chain = queries.call_string
+    named_scope_chain = filters.call_string
+    return class_name.constantize.all if named_scope_chain.blank?
     class_name.constantize.instance_eval { eval named_scope_chain }
   end
   

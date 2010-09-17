@@ -1,1 +1,11 @@
-=form.input :field_names, :as => :check_boxes, :collection => field_name_options_for_clever_report(form.object)
+-report ||= form.object
+-if !report.class_name.blank?
+  %h3 Which fields do you want to include in the report?
+
+  =form.input :field_names, :as => :check_boxes, :collection => options_for_clever_report(report.possible_field_names), :label => report.class_name.pluralize
+
+  -report.association_names.each do |association|
+    .association_counts{:id => "#{association}_counts"}
+      =form.input :field_names, :as => :check_boxes, :collection => options_for_clever_report(report.field_names_from_association(association)), :label => association.humanize, :wrapper_html => {:id => "clever_report_field_names_from_#{association}"}
+    
+    

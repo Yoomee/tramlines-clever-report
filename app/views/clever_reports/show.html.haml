@@ -1,10 +1,17 @@
 -title @report.name
 
-%ul.report_results
+%table#clever_report_results
+  %tr
+    %th
+    -@report.field_names.each do |field_name|
+      %th=field_name.humanize
   -@report.results.each do |result|
-    %li=link_to(result, result)
+    %tr
+      %td=link_to("view", result)
+      -@report.field_names.each do |field_name|
+        %td=result.send(field_name)
 
 -options_panel do
   =back_link
-  =link_to("Edit", edit_clever_report_path(@report))
-  =link_to("Delete", @report, :method => :delete, :confirm => "Are you sure?")
+  =link_to("Edit report", edit_clever_report_path(@report))
+  =link_to("Delete report", @report, :method => :delete, :confirm => "Are you sure?")

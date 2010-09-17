@@ -1,4 +1,4 @@
--semantic_form_for report do |form|
+-semantic_form_for(report, :id => "clever_report_form") do |form|
   -(1..CleverReport::number_of_steps).each do |step|
     -form.inputs(:style => report.step_num == step ? '' : 'display: none;') do
       =render("step_#{step}_form", :form => form)
