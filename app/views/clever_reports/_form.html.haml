@@ -1,0 +1,7 @@
+-semantic_form_for report do |form|
+  -(1..CleverReport::number_of_steps).each do |step|
+    -form.inputs(:style => report.step_num == step ? '' : 'display: none;') do
+      =render("step_#{step}_form", :form => form)
+      =form.input :step_num, :as => :hidden
+  -form.buttons do
+    =form.commit_button report.last_step? ? "Finish" : "Next"

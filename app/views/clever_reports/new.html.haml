@@ -1,0 +1,9 @@
+-title @report.step_title
+
+-if @report.step_num == 2
+  %h3 Which fields do you want to include in the report?
+
+=render("form", :report => @report)
+
+-options_panel do
+  =back_link

@@ -1,0 +1,8 @@
+-title "Reports"
+%ul.reports
+  -@reports.each do |report|
+    %li=link_to(report, report)
+
+-options_panel do
+  =back_link
+  =link_to("New report", new_clever_report_path)

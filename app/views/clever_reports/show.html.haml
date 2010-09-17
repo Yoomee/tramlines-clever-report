@@ -1,0 +1,10 @@
+-title @report.name
+
+%ul.report_results
+  -@report.results.each do |result|
+    %li=link_to(result, result)
+
+-options_panel do
+  =back_link
+  =link_to("Edit", edit_clever_report_path(@report))
+  =link_to("Delete", @report, :method => :delete, :confirm => "Are you sure?")
