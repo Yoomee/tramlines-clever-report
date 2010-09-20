@@ -1,7 +1,10 @@
 # Include hook code here
-ActiveRecord::Base.class_eval do
-  
+ActiveRecord::Base.class_eval do  
   class << self
+
+    def clever_fields
+      @clever_fields.blank? ? column_names.reject {|c| c.in? %w{id created_at updated_at}} : @clever_fields
+    end
     
     def has_clever_reports_with(*args)
       send(:include, HasCleverReports)
@@ -9,9 +12,6 @@ ActiveRecord::Base.class_eval do
       associations_for_clever_reports.each do |association_name|
         cattr_accessor("clever_stats_for_#{association_name}")
         self.send("clever_stats_for_#{association_name}=", [])
-        # define_method "number_of_#{association}" do
-        #   send(association).size
-        # end
       end
     end
     alias_method :has_clever_reports, :has_clever_reports_with
@@ -21,7 +21,7 @@ ActiveRecord::Base.class_eval do
     end
 
     def has_clever_fields_blacklist(blacklist = [])
-      self.clever_fields = column_names - (blacklist << "id")
+      @clever_fields = column_names - (blacklist << "id")
     end
     
     def has_clever_stat_on(association_name, stat_name, &block)

@@ -11,6 +11,8 @@ class CleverReport < ActiveRecord::Base
   
   serialize :field_names
   
+  accepts_nested_attributes_for :filters, :allow_destroy => true
+  
   validates_presence_of :name
   validates_presence_of :class_name
   validates_uniqueness_of :name
