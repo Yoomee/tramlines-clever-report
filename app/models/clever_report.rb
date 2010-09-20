@@ -25,8 +25,8 @@ class CleverReport < ActiveRecord::Base
     
     def possible_field_names(class_name)
       return [] if class_name.nil?
-      class_name.constantize.column_names.reject! {|name| name.in? %w{id}}
-    end    
+      class_name.constantize.clever_fields
+    end
     
   end
 
@@ -34,12 +34,12 @@ class CleverReport < ActiveRecord::Base
     class_name.constantize::associations_for_clever_reports || []
   end
 
-  def field_names=(value)
-    write_attribute(:field_names, value.reject(&:blank?))
+  def clever_stats_for(association_name)
+    class_name.constantize.send("clever_stats_for_#{association_name}")
   end
 
-  def field_names_from_association(association_name)
-    ["number_of_#{association_name}"]
+  def field_names=(value)
+    write_attribute(:field_names, value.reject(&:blank?))
   end
 
   def last_step?

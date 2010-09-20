@@ -5,7 +5,8 @@
   =form.input :field_names, :as => :check_boxes, :collection => options_for_clever_report(report.possible_field_names), :label => report.class_name.pluralize
 
   -report.association_names.each do |association|
-    .association_counts{:id => "#{association}_counts"}
-      =form.input :field_names, :as => :check_boxes, :collection => options_for_clever_report(report.field_names_from_association(association)), :label => association.humanize, :wrapper_html => {:id => "clever_report_field_names_from_#{association}"}
+    -if !report.clever_stats_for(association).empty?
+      .association_stats{:id => "#{association}_stats"}
+        =form.input :field_names, :as => :check_boxes, :collection => options_for_clever_report(report.clever_stats_for(association), :clever_stat => true), :label => association.humanize, :wrapper_html => {:id => "clever_report_field_names_from_#{association}"}
     
     

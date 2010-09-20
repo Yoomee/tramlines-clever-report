@@ -4,7 +4,7 @@
   %tr
     %th
     -@report.field_names.each do |field_name|
-      %th=field_name.humanize
+      %th=clever_label_name(field_name)
   -@report.results.each do |result|
     %tr
       %td=link_to("view", result)
