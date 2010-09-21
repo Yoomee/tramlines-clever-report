@@ -36,6 +36,10 @@ class CleverReport < ActiveRecord::Base
     class_name.constantize::associations_for_clever_reports || []
   end
 
+  def class_name
+    read_attribute(:class_name).blank? ? REPORTABLE_MODELS.first : read_attribute(:class_name)
+  end
+
   def clever_stats_for(association_name)
     class_name.constantize.send("clever_stats_for_#{association_name}")
   end

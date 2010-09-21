@@ -40,7 +40,7 @@ class CleverReportsController < ApplicationController
         return redirect_to(@report)
       end
       @report.step_num += 1
-      @report.filters.build if @report.last_step? && @report.filters.empty?
+      @report.filters.build if @report.last_step?
     end
     render :action => 'edit'
   end

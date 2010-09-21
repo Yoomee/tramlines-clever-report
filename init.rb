@@ -1,9 +1,19 @@
 # Include hook code here
 ActiveRecord::Base.class_eval do  
+  
   class << self
 
     def clever_fields
       @clever_fields.blank? ? column_names.reject {|c| c.in? %w{id created_at updated_at}} : @clever_fields
+    end
+
+    def custom_clever_options
+      @custom_clever_options ||= {}
+    end
+    
+    def has_clever_options_for(field_name, collection)
+      @custom_clever_options ||= {}
+      @custom_clever_options[field_name] = collection
     end
     
     def has_clever_reports_with(*args)

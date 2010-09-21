@@ -2,13 +2,8 @@ class CleverFilter < ActiveRecord::Base
   
   belongs_to :report, :class_name => "CleverReport"
   
-  attr_accessor :field_name
-  attr_accessor :criterion
-  
-  validates_presence_of :name
+  validates_presence_of :criterion
   serialize :args
-  
-  before_validation :set_name
   
   def args
     read_attribute(:args).is_a?(Array) ? read_attribute(:args) : [read_attribute(:args)]
@@ -28,12 +23,10 @@ class CleverFilter < ActiveRecord::Base
     !association_name.blank? && !(association_name.underscore.singularize == report.class_name.underscore)
   end
   
-  private
-  def set_name
-    unless field_name.blank? || criterion.blank?
-      name = has_association_name? ? "#{association_name}_" : ""
-      self.name = name << "#{field_name}_#{criterion}"
-    end
+  def name
+    name = has_association_name? ? "#{association_name}_" : ""
+    name << "#{field_name}_" unless field_name.blank?
+    name << "#{criterion}"
   end
   
 end
