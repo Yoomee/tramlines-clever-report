@@ -10,9 +10,13 @@ class CleverFilter < ActiveRecord::Base
   
   before_validation :set_name
   
+  def args
+    read_attribute(:args).is_a?(Array) ? read_attribute(:args) : [read_attribute(:args)]
+  end
+  
   def call_string
     return name if args.nil?
-    "#{name}(#{args.join(', ')})"
+    "#{name}('#{args.join("', '")}')"
   end
   
   def clever_field_names
@@ -21,13 +25,15 @@ class CleverFilter < ActiveRecord::Base
   end
   
   def has_association_name?
-    !association_name.blank? && (association_name.underscore.singularize == report.class_name.underscore)
+    !association_name.blank? && !(association_name.underscore.singularize == report.class_name.underscore)
   end
   
   private
   def set_name
-    name = has_association_name? ? "#{association_name}" : ""
-    self.name = name << "#{field_name}_#{criterion}"
+    unless field_name.blank? || criterion.blank?
+      name = has_association_name? ? "#{association_name}_" : ""
+      self.name = name << "#{field_name}_#{criterion}"
+    end
   end
   
 end

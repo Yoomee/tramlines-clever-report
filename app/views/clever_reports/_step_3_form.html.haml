@@ -1,2 +1,33 @@
+-content_for :head do
+  -(["contacts"] + report.association_names).each do |class_name|
+    =javascript_tag("var #{class_name}_options = \"#{escape_javascript(options_for_clever_field_names(class_name))}\";")
+  :javascript
+    var string_criteria = "#{escape_javascript(options_string_for_clever_report(HasCleverReports::STRING_FILTER_CRITERIA))}";
+    var number_criteria = "#{escape_javascript(options_string_for_clever_report(HasCleverReports::NUMBER_FILTER_CRITERIA))}";
+    var date_criteria = "#{escape_javascript(options_string_for_clever_report(HasCleverReports::DATE_FILTER_CRITERIA))}";
+    var boolean_criteria = "#{escape_javascript(options_string_for_clever_report(["is_true", "is_false"]))}";
+    
+    var CleverFilter = {
+      set_field_name_options: function(association_select) {
+        var field_name_select = association_select.parent().nextAll('.filter_field_name').children('select');
+        field_name_select.html(window[association_select.val() + '_options']);
+        CleverFilter.set_criterion_options(field_name_select);
+      },
+      set_criterion_options: function(field_name_select){
+        var criterion_select = field_name_select.parent().nextAll('.filter_criterion').children('select');
+        var field_name_type = field_name_select.children(':selected').attr('class').replace('clever_type_','');
+        if (field_name_type.match(/(string|text)/)) {
+          field_name_type = "string";
+        } else if (field_name_type.match(/(date|time|datetime)/)) {
+          field_name_type = "date";
+        } else if (field_name_type == "boolean"){
+          field_name_type = "boolean";
+        } else {
+          field_name_type = "number";
+        }
+        criterion_select.html(window[field_name_type + '_criteria']);
+      }
+    };
+
 -form.semantic_fields_for(:filters) do |filter_form|
   =render("clever_filters/form", :form => filter_form)

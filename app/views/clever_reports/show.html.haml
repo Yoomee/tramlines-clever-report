@@ -1,15 +1,18 @@
 -title @report.name
 
-%table#clever_report_results
-  %tr
-    %th
-    -@report.field_names.each do |field_name|
-      %th=clever_label_name(field_name)
-  -@report.results.each do |result|
+-if @report.results.empty?
+  %p No results found.
+-else
+  %table#clever_report_results
     %tr
-      %td=link_to("view", result)
+      %th
       -@report.field_names.each do |field_name|
-        %td=result.send(field_name)
+        %th=clever_label_name(field_name)
+    -@report.results.each do |result|
+      %tr
+        %td=link_to("view", result)
+        -@report.field_names.each do |field_name|
+          %td=result.send(field_name)
 
 -options_panel do
   =back_link
