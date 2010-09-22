@@ -69,5 +69,7 @@
         current_args_input.parent().html(new_args_input);
       }
     };
--form.semantic_fields_for(:filters) do |filter_form|
-  =render("clever_filters/form", :form => filter_form)
+=multiple_nested_inputs_for :filters, :form => form, :label => false
+-if false
+  -form.semantic_fields_for(:filters) do |filter_form|
+    =render("clever_filters/form", :form => filter_form)
