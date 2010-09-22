@@ -22,6 +22,27 @@ module CleverReportsHelper
   def options_string_for_clever_report(collection, options = {})
     options_for_select(options_for_clever_report(collection, options))
   end
+
+  def criterion_input_type(criterion)
+    case
+    when criterion.in? %w{is_today is_yesterday}
+      "hidden"
+    when criterion.in? %w{is_between is_between_inclusive}
+      "double_input"
+    when criterion.in? %w{is_in_the_last is_in_the_next}
+      "date_range"
+    else
+      "input"
+    end
+  end
+
+  def options_for_clever_criteria(collection, options = {})
+    collection.inject("") do |out, criterion|
+      tag_options = {:class => "clever_type_#{criterion_input_type(criterion)}", :value => criterion}
+      tag_options[:selected] = "selected" if options[:selected] == criterion
+      out << content_tag(:option, criterion.humanize, tag_options)
+    end
+  end
   
   def options_for_clever_field_names(association_name, options = {})
     klass = association_name.singularize.classify.constantize
