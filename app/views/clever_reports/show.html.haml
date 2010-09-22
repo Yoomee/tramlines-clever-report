@@ -1,6 +1,6 @@
 -title @report.name
 
--if @report.results.empty?
+-if @results.empty?
   %p No results found.
 -else
   %table#clever_report_results
@@ -8,11 +8,13 @@
       %th
       -@report.field_names.each do |field_name|
         %th=clever_label_name(field_name)
-    -@report.results.each do |result|
+    -@results.each do |result|
       %tr
         %td=link_to("view", result)
         -@report.field_names.each do |field_name|
           %td=result.send(field_name)
+
+=will_paginate(@results)
 
 -options_panel do
   =back_link

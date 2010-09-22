@@ -26,11 +26,6 @@ module CleverReportsHelper
   def options_for_clever_field_names(association_name, options = {})
     klass = association_name.singularize.classify.constantize
     klass.clever_fields.inject("") do |out, field_name|
-      if field_name=="category_id"
-        Rails.logger.info("field_name_type = #{field_name.class}")
-        Rails.logger.info("custom_clever_options = #{klass.custom_clever_options.keys.first.class}")
-        Rails.logger.info("include? = #{klass.custom_clever_options.keys.include?(field_name.to_sym)}")
-      end
       if klass.custom_clever_options.keys.collect(&:to_s).include?(field_name.to_s)
         column_type = "custom_select"
       else

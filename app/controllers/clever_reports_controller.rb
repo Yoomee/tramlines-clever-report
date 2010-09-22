@@ -11,7 +11,7 @@ class CleverReportsController < ApplicationController
   end
   
   def show
-
+    @results = @report.results.paginate(:page => params[:page], :per_page => 25)
   end
   
   def new
