@@ -14,7 +14,7 @@ class CleverReport < ActiveRecord::Base
   accepts_nested_attributes_for :filters, :allow_destroy => true
   
   validates_presence_of :name
-  validates_presence_of :class_name
+  validates_presence_of :source_name
   validates_uniqueness_of :name
 
   attr_writer :step_num
@@ -25,23 +25,23 @@ class CleverReport < ActiveRecord::Base
       STEP_TITLES.size
     end
     
-    def possible_field_names(class_name)
-      return [] if class_name.nil?
-      class_name.constantize.clever_fields
+    def possible_field_names(source_name)
+      return [] if source_name.nil?
+      source_name.constantize.clever_fields
     end
     
   end
 
   def association_names
-    class_name.constantize::associations_for_clever_reports || []
+    source_name.constantize::associations_for_clever_reports || []
   end
 
-  def class_name
-    read_attribute(:class_name).blank? ? REPORTABLE_MODELS.first : read_attribute(:class_name)
+  def source_name
+    read_attribute(:source_name).blank? ? REPORTABLE_MODELS.first : read_attribute(:source_name)
   end
 
   def clever_stats_for(association_name)
-    class_name.constantize.send("clever_stats_for_#{association_name}")
+    source_name.constantize.send("clever_stats_for_#{association_name}")
   end
 
   def field_names=(value)
@@ -53,7 +53,7 @@ class CleverReport < ActiveRecord::Base
   end
   
   def possible_field_names
-    self.class::possible_field_names(class_name)
+    self.class::possible_field_names(source_name)
   end
   
   def results
@@ -75,8 +75,8 @@ class CleverReport < ActiveRecord::Base
   private
   def get_results
     named_scope_chain = filters.call_string
-    return class_name.constantize.all if named_scope_chain.blank?
-    class_name.constantize.instance_eval { eval named_scope_chain }
+    return source_name.constantize.all if named_scope_chain.blank?
+    source_name.constantize.instance_eval { eval named_scope_chain }
   end
   
 end
