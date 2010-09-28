@@ -10,9 +10,9 @@ ActiveRecord::Base.class_eval do
       @custom_clever_options ||= {}
     end
     
-    def has_clever_options_for(field_name, collection)
+    def has_clever_options_for(field_name, collection = nil, &block)
       @custom_clever_options ||= {}
-      @custom_clever_options[field_name] = collection
+      @custom_clever_options[field_name] = block_given? ? block : collection
     end
     
     def has_clever_reports_with(*args)
