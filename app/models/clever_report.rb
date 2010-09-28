@@ -3,6 +3,8 @@ class CleverReport < ActiveRecord::Base
   REPORTABLE_MODELS = %w{Contact Donation Event Campaign}
   STEP_TITLES = ["Step 1: Choose source", "Step 2: Include Fields", "Step 3: Set filters"]
   
+  cattr_accessor :reportable_models
+  
   has_many :filters, :class_name => "CleverFilter", :foreign_key => "report_id" do
     def call_string
       all.collect(&:call_string).join(".")
@@ -14,7 +16,6 @@ class CleverReport < ActiveRecord::Base
   accepts_nested_attributes_for :filters, :allow_destroy => true
   
   validates_presence_of :name
-  validates_presence_of :source_name
   validates_uniqueness_of :name
 
   attr_writer :step_num

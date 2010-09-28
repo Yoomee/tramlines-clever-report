@@ -8,6 +8,5 @@ class CleverReportTest < ActiveSupport::TestCase
   should have_many(:filters)
   
   should validate_presence_of(:name)
-  should validate_presence_of(:source_name)
   
 end
