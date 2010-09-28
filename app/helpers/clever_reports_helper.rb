@@ -1,7 +1,7 @@
 module CleverReportsHelper
   
-  def clever_label_name(field_name)
-    field_name.gsub(/^clever_stat_/, '').humanize
+  def clever_label_name(field_name, method = "humanize") 
+    field_name.gsub(/^clever_stat_/, '').send(method)
   end
   
   def model_options_for_clever_report
@@ -12,7 +12,7 @@ module CleverReportsHelper
     options.reverse_merge!(:method => "humanize")
     options_hash = ActiveSupport::OrderedHash.new
     collection.each do |name|
-      label_name = clever_label_name(name)
+      label_name = clever_label_name(name, options[:method])
       label_name = "Crm Id" if label_name == "Crm"
       options_hash[label_name] = name
     end

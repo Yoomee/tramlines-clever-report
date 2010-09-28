@@ -1,16 +1,24 @@
+=javascript_include_tag 'timepicker.js'
 -([report.source_name.pluralize.downcase] + report.association_names).each do |source_name|
   =javascript_tag("var #{source_name}_options = \"#{escape_javascript(options_for_clever_field_names(source_name))}\";")
   -source_name.classify.constantize.custom_clever_options.each do |field_name, collection|
     -collection = collection.call if collection.is_a?(Proc)
     =javascript_tag("var #{source_name}_#{field_name}_options = \"#{escape_javascript(options_for_select(collection))}\";")
 :javascript
-  var string_criteria = "#{escape_javascript(options_string_for_clever_report(HasCleverReports::STRING_FILTER_CRITERIA))}";
-  var number_criteria = "#{escape_javascript(options_string_for_clever_report(HasCleverReports::NUMBER_FILTER_CRITERIA))}";
-  var date_criteria = "#{escape_javascript(options_string_for_clever_report(HasCleverReports::DATE_FILTER_CRITERIA))}";
+  var string_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::STRING_CRITERIA))}";
+  var number_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::NUMBER_CRITERIA))}";
+  var date_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::DATE_CRITERIA))}";
   var boolean_criteria = "#{escape_javascript(options_for_select([['Is true','is'], ['Is false','is_not']]))}";
   var custom_select_criteria = "#{escape_javascript(options_string_for_clever_report(['is', 'is_not']))}";
 
   var CleverFilter = {
+    init_datepickers: function() {
+      $('input.datetime').removeClass('hasDatepicker').datepicker({
+        duration: '',
+        dateFormat: 'dd/mm/yy',
+        constrainInput: false
+      });
+    },
     association_name_input: function(elem) {
       return elem.parents(".clever_filter_form ol").children(".filter_association_name").children("select");
     },
@@ -21,7 +29,14 @@
       return elem.parents(".clever_filter_form ol").children(".filter_criterion").children("select");
     },
     args_input: function(elem) {
-      return elem.parents(".clever_filter_form ol").children(".filter_args").children(".filter_args_input");
+      return elem.parents(".clever_filter_form ol").children(".filter_args").children(".filter_args_input").first();
+    },
+    copy_element: function(element_type, element) {
+      var new_element = $("<" + element_type + "></" + element_type + ">");
+      new_element.attr("id", element.attr("id"));
+      new_element.attr("name", element.attr("name"));
+      new_element.attr("class", element.attr("class"));
+      return new_element;
     },
     set_field_name_options: function(association_select) {
       var field_name_select = CleverFilter.field_name_input(association_select);
@@ -47,6 +62,12 @@
     },
     set_args_input: function(criterion_select) {
       var current_args_input = CleverFilter.args_input(criterion_select);
+      if (criterion_select.val().match(/is_((not_)?set|today|yesterday)/)) {
+        var first_input = current_args_input.parent().children('input:first');
+        current_args_input.parent().html(first_input.attr('value', ''));
+        current_args_input.parent().hide();
+        return false;
+      }
       var selected_field_name_type = CleverFilter.field_name_input(criterion_select).children(':selected').attr('class').replace('clever_type_', '');
       var args_input_type;
       if (selected_field_name_type == "custom_select") {
@@ -54,14 +75,38 @@
       } else {
         args_input_type = "input";
       }
-      var new_args_input = $("<" + args_input_type + "></" + args_input_type + ">");
-      new_args_input.attr("id", current_args_input.attr("id"));
-      new_args_input.attr("name", current_args_input.attr("name"));
-      new_args_input.attr("class", current_args_input.attr("class"));
+      var new_args_input = CleverFilter.copy_element(args_input_type, current_args_input);
+      new_args_input.attr("autocomplete", "off");
       if (args_input_type == "input") {
         if (selected_field_name_type == "boolean") {
           new_args_input.attr("type", "hidden");
           new_args_input.val(1);
+        } else if (selected_field_name_type == "date") {
+          new_args_input.attr("type", "text");
+          new_args_input.addClass("datetime");
+          if (res = criterion_select.val().match(/(is_between|is_in_the_(next|last))/)) {
+            var type = (res[0].match(/is_between/) ? "between" : "duration");
+            if (new_args_input.attr('name').match(/.*\[\]$/)) {
+              console.log('matched');
+              new_args_input.attr('name', new_args_input.attr('name') + '[]');
+            } else {
+              console.log('matched');
+            }
+            var new_args_input2 = CleverFilter.copy_element((type=="between" ? "input" : "select"), new_args_input);
+            new_args_input2.attr('id', new_args_input2.attr('id') + "2");
+            var wrapper = $('<div>');           
+            wrapper.append(new_args_input);
+            if (type=="between") {
+              wrapper.append(" and ");
+            } else {
+              
+            }
+            wrapper.append(new_args_input2);
+            current_args_input.parent().html(wrapper.remove().html());
+            current_args_input.parent().show();            
+            if (type=="between") { CleverFilter.init_datepickers(); }
+            return false;
+          }
         } else {
           new_args_input.attr("type", "text");
         }
@@ -71,5 +116,7 @@
         new_args_input.html(window[source_name + "_" + field_name + "_options"]);
       }
       current_args_input.parent().html(new_args_input);
+      current_args_input.parent().show();
+      CleverFilter.init_datepickers();      
     }
   };
