@@ -25,11 +25,11 @@ module CleverReportsHelper
 
   def criterion_input_type(criterion)
     case
-    when criterion.in? %w{is_today is_yesterday}
+    when criterion.in?(%w{is_today is_yesterday})
       "hidden"
-    when criterion.in? %w{is_between is_between_inclusive}
+    when criterion.in?(%w{is_between is_between_inclusive})
       "double_input"
-    when criterion.in? %w{is_in_the_last is_in_the_next}
+    when criterion.in?(%w{is_in_the_last is_in_the_next})
       "date_range"
     else
       "input"
