@@ -1,4 +1,4 @@
 -report = form.object
 -content_for :head do
   =render 'clever_reports/javascript', :report => report
-=multiple_nested_inputs_for :filters, :form => form, :label => false
+=multiple_nested_inputs_for :filters, :form => form, :label => false, :partial => "clever_filters/form", :parent_association_name => "report"

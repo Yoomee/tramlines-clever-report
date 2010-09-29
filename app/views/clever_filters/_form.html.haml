@@ -7,5 +7,5 @@
     %li.select.optional.filter_criterion
       =fields.select :criterion, options_for_clever_criteria(filter.criteria_options, :selected => filter.criterion), {}, :onchange => 'CleverFilter.set_args_input($(this))'
     %li.clever_filter_args_fieldset
-      =render("clever_reports/filter_args_form", :form => fields, :filter => filter)
+      =render("clever_filters/args_form", :form => fields, :filter => filter)
     =multiple_nested_delete_link_for(:filter, :form => fields, :parent_name => "CleverReport")
