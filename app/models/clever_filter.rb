@@ -37,6 +37,10 @@ class CleverFilter < ActiveRecord::Base
     read_attribute(:args).is_a?(Array) ? read_attribute(:args) : [read_attribute(:args)]
   end
   
+  def association_name
+    read_attribute(:association_name).blank? ? source_name.pluralize.downcase : read_attribute(:association_name)
+  end
+  
   def call_string
     out = has_association_name? ? "#{association_name}_" : ""
     out << "#{field_name}_" unless field_name.blank?

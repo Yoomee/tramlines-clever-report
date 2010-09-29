@@ -3,10 +3,9 @@
   -fields.inputs :class => "clever_filter_form" do
     =fields.input :association_name, :as => :select, :collection => options_for_clever_report([report.source_name.pluralize.downcase] + report.association_names), :include_blank => false, :label => false, :input_html => {:class => "filter_association_name_input", :onchange => 'CleverFilter.set_field_name_options($(this))'}, :wrapper_html => {:class => "filter_association_name"}
     %li.select.optional.filter_field_name
-      =fields.select :field_name, options_for_clever_field_names(report.source_name, :selected => filter.field_name), {}, :onchange => 'CleverFilter.set_criterion_options($(this))'
+      =fields.select :field_name, options_for_clever_field_names(filter.association_name, :selected => filter.field_name), {}, :onchange => 'CleverFilter.set_criterion_options($(this))'
     %li.select.optional.filter_criterion
       =fields.select :criterion, options_for_clever_criteria(filter.criteria_options, :selected => filter.criterion), {}, :onchange => 'CleverFilter.set_args_input($(this))'
-    =#fields.input :criterion, :as => :select, :collection => options_for_clever_criteria(filter.criteria_options, :selected => filter.criterion), :include_blank => false, :label => false, :input_html => {:onchange => 'CleverFilter.set_args_input($(this))'}, :wrapper_html => {:class => "filter_criterion"}
     %li.clever_filter_args_fieldset
       =render("clever_reports/filter_args_form", :form => fields, :filter => filter)
     =multiple_nested_delete_link_for(:filter, :form => fields, :parent_name => "CleverReport")

@@ -86,27 +86,29 @@
         } else if (selected_field_name_type == "date") {
           new_args_input.attr("type", "text");
           new_args_input.addClass("datetime");
-          if (res = criterion_select.val().match(/(is_between|is_in_the_(next|last))/)) {
-            var type = (res[0].match(/is_between/) ? "between" : "duration");
-            if (type=="duration") { new_args_input.removeClass('datetime'); }
-            var new_args_input2 = CleverFilter.copy_element((type=="between" ? "input" : "select"), new_args_input);
-            var new_args_input2_li = $('<li>').addClass(current_args_input.parent().attr('class'));
-            new_args_input2.attr('id', new_args_input2.attr('id') + "2");
-            
-            args_wrapper.html(args_wrapper.children().first().html(new_args_input));
-            if (type=="between") {
-              args_wrapper.append("<li class='clever_filter_args_filler'>and</li>");
-            } else {
-              new_args_input2.html(date_duration_criteria);
-            }
-            args_wrapper.append(new_args_input2_li.html(new_args_input2));            
-            args_wrapper.closest('fieldset').show();
-            CleverFilter.init_datepickers();
-            return false;
-          }
         } else {
           new_args_input.attr("type", "text");
         }
+        
+        if (res = criterion_select.val().match(/(is_between|is_in_the_(next|last))/)) {
+          var type = (res[0].match(/is_between/) ? "between" : "duration");
+          if (type=="duration") { new_args_input.removeClass('datetime'); }
+          var new_args_input2 = CleverFilter.copy_element((type=="between" ? "input" : "select"), new_args_input);
+          var new_args_input2_li = $('<li>').addClass(current_args_input.parent().attr('class'));
+          new_args_input2.attr('id', new_args_input2.attr('id') + "2");
+          
+          args_wrapper.html(args_wrapper.children().first().html(new_args_input));
+          if (type=="between") {
+            args_wrapper.append("<li class='clever_filter_args_filler'>and</li>");
+          } else {
+            new_args_input2.html(date_duration_criteria);
+          }
+          args_wrapper.append(new_args_input2_li.html(new_args_input2));            
+          args_wrapper.closest('fieldset').show();
+          CleverFilter.init_datepickers();
+          return false;
+        }
+        
       } else if (args_input_type == "select") {
         var source_name = CleverFilter.association_name_input(criterion_select).val();
         var field_name = CleverFilter.field_name_input(criterion_select).val();

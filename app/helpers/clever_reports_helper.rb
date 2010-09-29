@@ -38,10 +38,10 @@ module CleverReportsHelper
 
   def options_for_clever_criteria(collection, options = {})
     collection.inject("") do |out, criterion|
-      label, value = criterion.is_a?(Array) ? criterion : [criterion, criterion]
+      label_name, value = criterion.is_a?(Array) ? criterion : [criterion, criterion]
       tag_options = {:class => "clever_type_#{criterion_input_type(criterion)}", :value => value}
       tag_options[:selected] = "selected" if options[:selected] == value
-      out << content_tag(:option, label.humanize, tag_options)
+      out << content_tag(:option, label_name.humanize, tag_options)
     end
   end
   
@@ -55,7 +55,8 @@ module CleverReportsHelper
       end
       tag_options = {:class => "clever_type_#{column_type}", :value => field_name}
       tag_options[:selected] = "selected" if options[:selected] == field_name
-      out << content_tag(:option, field_name.humanize, tag_options)
+      label_name = (field_name=="crm_id" ? "Crm Id" : field_name.humanize)
+      out << content_tag(:option, label_name, tag_options)
     end
   end
   

@@ -1,18 +1,15 @@
+-unique_id = ActiveSupport::SecureRandom::hex(2)
 -input_html = {:id => "", :class => "filter_args_input", :autocomplete => "off"}
 -wrapper_html = {:id => "", :class => "filter_args"}
 
 -if filter.field_type.in?(%w{date time datetime})
   -input_html[:class] += " datetime"
-  :javascript
-    $(document).ready(function() {
-      CleverFilter.init_datepickers();
-    });
 -elsif filter.field_type == "custom_select"
   :javascript
     $(document).ready(function() {
-      $('li.filter_args select:first').html(#{filter.source_name.pluralize.downcase}_#{filter.field_name}_options);
+      $('##{unique_id}_custom_select').html(#{filter.association_name}_#{filter.field_name}_options);
     });
-
+      
 -if filter.criterion.match(/is_((not_)?set|today|yesterday)/)
   -form.inputs(:for => :args, :style => "display:none") do |args_fields|
     =args_fields.input '', :as => :string, :label => false, :input_html => input_html.merge(:value => ''), :wrapper_html => wrapper_html
@@ -20,7 +17,7 @@
   -form.inputs :for => :args do |args_fields|
     -if filter.field_type == "custom_select"
       %li.filter_args
-        =args_fields.select '', [], {}, input_html
+        =args_fields.select '', [], {}, input_html.merge(:id => "#{unique_id}_custom_select")
     -elsif filter.criterion.match(/^is_between/)
       -filter.args.each do |arg|
         =args_fields.input '', :as => :string, :label => false, :input_html => input_html.merge(:value => arg), :wrapper_html => wrapper_html
