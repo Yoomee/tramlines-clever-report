@@ -12,7 +12,11 @@
       %tr
         %td=link_to("view", result)
         -@report.field_names.each do |field_name|
-          %td=result.send(field_name)
+          %td
+            -if field_name.match(/^(.+)_id$/) && result.respond_to?($1)
+              =link_to(result.send($1), result.send($1))
+            -else
+              =result.send(field_name)
 
 =will_paginate(@results)
 
