@@ -6,10 +6,13 @@ class CleverFilter < ActiveRecord::Base
   serialize :args
 
   delegate :source_name, :to => :report
+  delegate :possible_field_names, :to => :report
 
   STRING_CRITERIA = %w{is_equal_to is_not_equal_to contains does_not_contain begins_with does_not_begin_with ends_with does_not_end_with is_not_set}
   NUMBER_CRITERIA = %w{is_equal_to is_less_than is_less_than_or_equal_to is_greater_than is_greater_than_or_equal_to is_between is_between_inclusive is_not_set}
   DATE_CRITERIA = %w{is_on_or_before is_before is_on_or_after is_between is_between_inclusive is_in_the_next is_in_the_last is_today is_yesterday is_not_set}
+  BOOLEAN_CRITERIA = [['Is true','is'], ['Is false','is_not']]
+  DATE_DURATIONS = ['days', 'weeks', 'months', 'years']
 
   COMPARISON_CONDITIONS = {
     :equals => [:is_equal_to],
@@ -68,10 +71,31 @@ class CleverFilter < ActiveRecord::Base
     end
     criterion
   end
+
+  def criterion
+    read_attribute(:criterion).blank? ? possible_field_names.first : read_attribute(:criterion)
+  end
+
+  def criteria_options
+    case field_type
+    when "date" || "time" || "dateime"
+      DATE_CRITERIA
+    when "integer" || "float"
+      NUMBER_CRITERIA
+    when "boolean"
+      BOOLEAN_CRITERIA
+    when "custom_select"
+      ["is", "is_not"]
+    else
+      STRING_CRITERIA
+    end
+  end
   
   def field_type
-    return nil if source_name.nil?
-    source_name.classify.constantize.columns.detect{|col| col.name == field_name}.type.to_s
+    return nil if source_name.blank? || field_name.blank?
+    klass = source_name.classify.constantize
+    return "custom_select" if klass.custom_clever_options.keys.collect(&:to_s).include?(field_name.to_s)
+    klass.columns.detect{|col| col.name == field_name}.type.to_s
   end
   
   def has_association_name?

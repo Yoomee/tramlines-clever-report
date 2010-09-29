@@ -8,8 +8,8 @@
   var string_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::STRING_CRITERIA))}";
   var number_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::NUMBER_CRITERIA))}";
   var date_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::DATE_CRITERIA))}";
-  var boolean_criteria = "#{escape_javascript(options_for_select([['Is true','is'], ['Is false','is_not']]))}";
-  var date_duration_criteria = "#{escape_javascript(options_string_for_clever_report(['days', 'weeks', 'months', 'years']))}";
+  var boolean_criteria = "#{escape_javascript(options_for_select(CleverFilter::BOOLEAN_CRITERIA))}";
+  var date_duration_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::DATE_DURATIONS))}";
   var custom_select_criteria = "#{escape_javascript(options_string_for_clever_report(['is', 'is_not']))}";
 
   var CleverFilter = {
@@ -67,7 +67,7 @@
       var args_wrapper = current_args_input.closest('ol');
       if (criterion_select.val().match(/is_((not_)?set|today|yesterday)/)) {
         args_wrapper.html(current_args_input.attr('value', '').parent());
-        args_wrapper.hide();
+        args_wrapper.closest('fieldset').hide();
         return false;
       }
       var selected_field_name_type = CleverFilter.field_name_input(criterion_select).children(':selected').attr('class').replace('clever_type_', '');
@@ -78,6 +78,7 @@
         args_input_type = "input";
       }
       var new_args_input = CleverFilter.copy_element(args_input_type, current_args_input);
+      new_args_input.removeClass('datetime');
       if (args_input_type == "input") {
         if (selected_field_name_type == "boolean") {
           new_args_input.attr("type", "hidden");
@@ -87,6 +88,7 @@
           new_args_input.addClass("datetime");
           if (res = criterion_select.val().match(/(is_between|is_in_the_(next|last))/)) {
             var type = (res[0].match(/is_between/) ? "between" : "duration");
+            if (type=="duration") { new_args_input.removeClass('datetime'); }
             var new_args_input2 = CleverFilter.copy_element((type=="between" ? "input" : "select"), new_args_input);
             var new_args_input2_li = $('<li>').addClass(current_args_input.parent().attr('class'));
             new_args_input2.attr('id', new_args_input2.attr('id') + "2");
@@ -98,8 +100,8 @@
               new_args_input2.html(date_duration_criteria);
             }
             args_wrapper.append(new_args_input2_li.html(new_args_input2));            
-            args_wrapper.show();
-            if (type=="between") { CleverFilter.init_datepickers(); }
+            args_wrapper.closest('fieldset').show();
+            CleverFilter.init_datepickers();
             return false;
           }
         } else {
@@ -111,7 +113,7 @@
         new_args_input.html(window[source_name + "_" + field_name + "_options"]);
       }
       args_wrapper.html(args_wrapper.children().first().html(new_args_input));
-      args_wrapper.show();
+      args_wrapper.closest('fieldset').show();
       CleverFilter.init_datepickers();      
     }
   };
