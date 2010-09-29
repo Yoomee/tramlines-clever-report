@@ -16,7 +16,7 @@ class CleverFilterTest < ActiveSupport::TestCase
     
     should "return correct call_string for standard criteria" do
       @filter = Factory.build(:clever_filter, :report => @report, :association_name => 'members', :field_name => 'forename', :criterion => 'is_equal_to', :args => ['John'])
-      assert_equal @filter.call_string, "forename_is_equal_to('John')"
+      assert_equal @filter.call_string, "forename_equals('John')"
     end
     
     should "return dynamically calculated call_string for criterion 'is_today'" do
