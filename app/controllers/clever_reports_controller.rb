@@ -1,8 +1,6 @@
 class CleverReportsController < ApplicationController
   
-  layout "crm/application"
-  
-  user_only :edit, :create, :destroy, :index, :new, :show, :update
+  admin_only :edit, :create, :destroy, :index, :new, :show, :update
   
   before_filter :get_report, :except => %w{create index new}
   
