@@ -1,7 +1,8 @@
 module CleverReportsHelper
   
-  def clever_label_name(field_name, method = "humanize") 
-    field_name.gsub(/^clever_stat_/, '').send(method)
+  def clever_label_name(field_name, method = nil)
+    name = field_name.gsub(/^clever_stat_/, '')
+    method.nil? ? name.gsub(/_/, ' ').downcase : name.send(method)
   end
   
   def model_options_for_clever_report
@@ -9,12 +10,9 @@ module CleverReportsHelper
   end
   
   def options_for_clever_report(collection, options = {})
-    options.reverse_merge!(:method => "humanize")
     options_hash = ActiveSupport::OrderedHash.new
     collection.each do |name|
-      label_name = clever_label_name(name, options[:method])
-      label_name = "Crm Id" if label_name == "Crm"
-      options_hash[label_name] = name
+      options_hash[clever_label_name(name, options[:method])] = name
     end
     options_hash
   end
@@ -41,7 +39,7 @@ module CleverReportsHelper
       label_name, value = criterion.is_a?(Array) ? criterion : [criterion, criterion]
       tag_options = {:class => "clever_type_#{criterion_input_type(criterion)}", :value => value}
       tag_options[:selected] = "selected" if options[:selected] == value
-      out << content_tag(:option, label_name.humanize, tag_options)
+      out << content_tag(:option, clever_label_name(label_name), tag_options)
     end
   end
   
@@ -55,8 +53,7 @@ module CleverReportsHelper
       end
       tag_options = {:class => "clever_type_#{column_type}", :value => field_name}
       tag_options[:selected] = "selected" if options[:selected] == field_name
-      label_name = (field_name=="crm_id" ? "Crm Id" : field_name.humanize)
-      out << content_tag(:option, label_name, tag_options)
+      out << content_tag(:option, clever_label_name(field_name), tag_options)
     end
   end
   
