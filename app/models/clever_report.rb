@@ -7,7 +7,11 @@ class CleverReport < ActiveRecord::Base
   
   has_many :filters, :class_name => "CleverFilter", :foreign_key => "report_id" do
     def call_string
-      all.collect(&:call_string).join(".")
+      call_array.join(".")
+    end
+    
+    def call_array
+      all.collect(&:call_string)
     end
   end
   
@@ -76,7 +80,7 @@ class CleverReport < ActiveRecord::Base
   private
   def get_results
     named_scope_chain = filters.call_string
-    return source_name.constantize.all if named_scope_chain.blank?
+    return source_name.constantize.scoped_all if named_scope_chain.blank?
     source_name.constantize.instance_eval { eval named_scope_chain }
   end
   

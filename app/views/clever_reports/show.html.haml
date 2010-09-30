@@ -1,24 +1,26 @@
 -title @report.name
 
--if @results.empty?
-  %p No results found.
--else
-  %table#clever_report_results
-    %tr
-      %th
-      -@report.field_names.each do |field_name|
-        %th=clever_label_name(field_name)
-    -@results.each do |result|
-      %tr
-        %td=link_to("view", result)
-        -@report.field_names.each do |field_name|
-          %td
-            -if field_name.match(/^(.+)_id$/) && result.respond_to?($1)
-              =link_to(result.send($1), result.send($1))
-            -else
-              =result.send(field_name)
+=export_as_table(@report)
 
-=will_paginate(@results)
+-if false
+  -if @results.empty?
+    %p No results found.
+  -else
+    %table#clever_report_results
+      %tr
+        %th
+        -@report.field_names.each do |field_name|
+          %th=clever_label_name(field_name)
+      -@results.each do |result|
+        %tr
+          %td=link_to("view", result)
+          -@report.field_names.each do |field_name|
+            %td
+              -if field_name.match(/^(.+)_id$/) && result.respond_to?($1)
+                =link_to(result.send($1), result.send($1))
+              -else
+                =result.send(field_name)
+  =will_paginate(@results)
 
 -options_panel do
   =back_link
