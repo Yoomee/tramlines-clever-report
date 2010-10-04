@@ -81,7 +81,7 @@ class CleverReport < ActiveRecord::Base
   def get_results
     named_scope_chain = filters.call_string
     return source_name.constantize.scoped_all if named_scope_chain.blank?
-    named_scope_chain << ".group_by_id"    
+    named_scope_chain << ".group_by_id"
     source_name.constantize.instance_eval { eval named_scope_chain }
   end
   
