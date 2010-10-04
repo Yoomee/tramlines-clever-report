@@ -53,16 +53,6 @@ class CleverReport < ActiveRecord::Base
     write_attribute(:field_names, value.reject(&:blank?))
   end
 
-  def jqgrid_columns
-    field_names.collect do |field_name|
-      label_name = field_name.titleize
-      # if field_name.match(/^(.+)_id$/) && source_name.constantize.instance_methods.include?($1)
-      #   field_name = $1
-      # end
-      {:field => field_name, :label => label_name}
-    end
-  end
-
   def last_step?
     self.class::number_of_steps == step_num
   end
