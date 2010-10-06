@@ -96,8 +96,8 @@ class CleverFilter < ActiveRecord::Base
   end
   
   def field_type
-    return nil if source_name.blank? || field_name.blank?
-    klass = source_name.classify.constantize
+    return nil if association_name.blank? || field_name.blank?
+    klass = association_name.classify.constantize
     return "custom_select" if klass.custom_clever_options.keys.collect(&:to_s).include?(field_name.to_s)
     klass.columns.detect{|col| col.name == field_name}.type.to_s
   end
