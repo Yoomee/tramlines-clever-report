@@ -77,7 +77,8 @@ class CleverFilter < ActiveRecord::Base
   end
 
   def criterion
-    read_attribute(:criterion).blank? ? possible_field_names.first : read_attribute(:criterion)
+    return read_attribute(:criterion) unless read_attribute(:criterion).blank? 
+    report.nil? ? nil : possible_field_names.first
   end
 
   def criteria_options
