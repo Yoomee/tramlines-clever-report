@@ -21,22 +21,22 @@ class CleverFilterTest < ActiveSupport::TestCase
     
     should "return dynamically calculated call_string for criterion 'is_today'" do
       @filter = Factory.build(:clever_filter, :report => @report, :association_name => 'members', :field_name => 'created_at', :criterion => 'is_today')
-      assert_equal @filter.call_string, "created_at_is_between(#{Date.yesterday}, #{Date.tomorrow})"
+      assert_equal @filter.call_string, "created_at_is_between('#{Date.yesterday}', '#{Date.tomorrow}')"
     end
     
     should "return dynamically calculated call_string for criterion 'is_yesterday'" do
       @filter = Factory.build(:clever_filter, :report => @report, :association_name => 'members', :field_name => 'created_at', :criterion => 'is_yesterday')
-      assert_equal @filter.call_string, "created_at_is_between(#{2.days.ago.to_date}, #{Date.today})"
+      assert_equal @filter.call_string, "created_at_is_between('#{2.days.ago.to_date}', '#{Date.today}')"
     end
     
     should "return dynamically calculated call_string for criterion 'is_in_the_next'" do
       @filter = Factory.build(:clever_filter, :report => @report, :association_name => 'members', :field_name => 'created_at', :criterion => 'is_in_the_next', :args => [2, "weeks"])
-      assert_equal @filter.call_string, "created_at_is_between(#{Date.yesterday}, #{2.weeks.from_now.to_date})"
+      assert_equal @filter.call_string, "created_at_is_between('#{Date.yesterday}', '#{2.weeks.from_now.to_date}')"
     end
     
     should "return dynamically calculated call_string for criterion 'is_in_the_last'" do
       @filter = Factory.build(:clever_filter, :report => @report, :association_name => 'members', :field_name => 'created_at', :criterion => 'is_in_the_last', :args => [3, "days"])
-      assert_equal @filter.call_string, "created_at_is_between(#{3.days.ago.to_date}, #{Date.tomorrow})"
+      assert_equal @filter.call_string, "created_at_is_between('#{3.days.ago.to_date}', '#{Date.tomorrow}')"
     end
     
   end  
