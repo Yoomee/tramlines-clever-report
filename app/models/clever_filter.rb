@@ -65,7 +65,7 @@ class CleverFilter < ActiveRecord::Base
   end
   
   def core_args
-    field_type.in?(%w{date time dateime}) ? args.collect {|a| Date.strptime(a, '%d/%m/%Y')} : args
+    field_type.in?(%w{date time datetime}) ? args.collect {|a| Date.strptime(a, '%d/%m/%Y')} : args
   end
   
   def core_criterion
@@ -83,9 +83,9 @@ class CleverFilter < ActiveRecord::Base
 
   def criteria_options
     case field_type
-    when "date" || "time" || "dateime"
+    when "date", "time", "datetime"
       DATE_CRITERIA
-    when "integer" || "float"
+    when "integer", "float"
       NUMBER_CRITERIA
     when "boolean"
       BOOLEAN_CRITERIA

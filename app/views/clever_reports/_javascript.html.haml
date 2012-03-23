@@ -1,4 +1,4 @@
-=javascript_include_tag 'timepicker.js'
+=#javascript_include_tag 'timepicker.js'
 -([report.source_name.pluralize.downcase] + report.association_names).each do |source_name|
   =javascript_tag("var #{source_name}_options = \"#{escape_javascript(options_for_clever_field_names(source_name))}\";")
   -source_name.classify.constantize.custom_clever_options.each do |field_name, collection|
@@ -11,7 +11,7 @@
   var boolean_criteria = "#{escape_javascript(options_for_select(CleverFilter::BOOLEAN_CRITERIA))}";
   var date_duration_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::DATE_DURATIONS))}";
   var custom_select_criteria = "#{escape_javascript(options_string_for_clever_report(['is', 'is_not']))}";
-
+  
   var CleverFilter = {
     init_datepickers: function() {
       $('input.datetime').removeClass('hasDatepicker').datepicker({
@@ -83,7 +83,7 @@
         if (selected_field_name_type == "boolean") {
           new_args_input.attr("type", "hidden");
           new_args_input.val(1);
-        } else if (selected_field_name_type == "date") {
+        } else if (selected_field_name_type.match(/(date|time|datetime)/)) {
           new_args_input.attr("type", "text");
           new_args_input.addClass("datetime");
         } else {
