@@ -3,6 +3,10 @@ class CleverReport < ActiveRecord::Base
   REPORTABLE_MODELS = %w{Contact Donation Event Campaign}
   STEP_TITLES = ["Step 1: Choose source", "Step 2: Include Fields", "Step 3: Set filters"]
   
+  belongs_to :created_by, :class_name => "Member"
+  belongs_to :last_edited_by, :class_name => "Member"
+  belongs_to :last_run_by, :class_name => "Member"
+    
   cattr_accessor :reportable_models
   
   has_many :filters, :class_name => "CleverFilter", :foreign_key => "report_id" do
@@ -83,6 +87,10 @@ class CleverReport < ActiveRecord::Base
     return source_name.constantize.scoped_all if named_scope_chain.blank?
     named_scope_chain << ".group_by_id"
     source_name.constantize.instance_eval { eval named_scope_chain }
+  end
+  
+  def update_edited_at
+    self.edited_at = Time.now unless changed_attributes.keys == ["run_at"]
   end
   
 end

@@ -5,10 +5,11 @@ class CleverReportsController < ApplicationController
   before_filter :get_report, :except => %w{create index new}
   
   def index
-    @reports = CleverReport.all
+    @reports = CleverReport.descend_by_created_at.paginate(:page => params[:page], :per_page => 20)
   end
   
   def show
+    @report.update_attributes(:last_run_at => Time.now, :last_run_by => logged_in_member)
     @results = @report.results.paginate(:page => params[:page], :per_page => 20)
   end
   
@@ -17,7 +18,7 @@ class CleverReportsController < ApplicationController
   end
   
   def create
-    @report = CleverReport.new(params[:clever_report])
+    @report = CleverReport.new(params[:clever_report].merge(:member => logged_in_member))
     if @report.save
       if @report.last_step?
         flash[:notice] = "Finished."
@@ -32,7 +33,7 @@ class CleverReportsController < ApplicationController
   end
   
   def update
-    if @report.update_attributes(params[:clever_report])
+    if @report.update_attributes(params[:clever_report].merge(:last_edited_at => Time.now, :last_edited_by => logged_in_member))
       if @report.last_step?
         flash[:notice] = "Finished."
         return redirect_to(@report)

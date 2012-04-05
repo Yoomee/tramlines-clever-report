@@ -1,9 +1,10 @@
 -title @report.name
-
 =export_as_table(@report, :results)
 
 -options_panel do
   =back_link
+  =link_to("All reports", clever_reports_path)
   =link_to("Export as CSV", export_as_csv(@report, :results))
   =link_to("Edit report", edit_clever_report_path(@report))
   =link_to("Delete report", @report, :method => :delete, :confirm => "Are you sure?")
+  

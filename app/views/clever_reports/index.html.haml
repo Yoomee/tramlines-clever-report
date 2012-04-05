@@ -1,8 +1,25 @@
 -title "Reports"
-%ul.reports
+%table.reports
+  %thead
+    %tr
+      %th Name
+      %th Created
+      %th Last edited
+      %th Last run
+  %tbody
   -@reports.each do |report|
-    %li=link_to(report, report)
-
+    %tr
+      %td=link_to(report, report)
+      %td
+        =report.created_at.try(:strftime,'%d/%m/%y %H:%M')
+        ="by #{report.created_by}" if report.created_by
+      %td
+        =report.last_edited_at.try(:strftime,'%d/%m/%y %H:%M')
+        ="by #{report.last_edited_by}" if report.last_edited_by
+      %td
+        =report.last_run_at.try(:strftime,'%d/%m/%y %H:%M')
+        ="by #{report.last_run_by}" if report.last_run_by
+=will_paginate(@reports)
 -options_panel do
   =back_link
   =link_to("New report", new_clever_report_path)
