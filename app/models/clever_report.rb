@@ -89,8 +89,4 @@ class CleverReport < ActiveRecord::Base
     source_name.constantize.instance_eval { eval named_scope_chain }
   end
   
-  def update_edited_at
-    self.edited_at = Time.now unless changed_attributes.keys == ["run_at"]
-  end
-  
 end
