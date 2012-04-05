@@ -18,7 +18,7 @@ class CleverReportsController < ApplicationController
   end
   
   def create
-    @report = CleverReport.new(params[:clever_report].merge(:member => logged_in_member))
+    @report = CleverReport.new(params[:clever_report].merge(:created_by => logged_in_member))
     if @report.save
       if @report.last_step?
         flash[:notice] = "Finished."
