@@ -8,6 +8,7 @@
   :javascript
     $(document).ready(function() {
       $('##{unique_id}_custom_select').html(#{filter.association_name}_#{filter.field_name}_options);
+      $('##{unique_id}_custom_select').val('#{[*filter.args].first}');
     });
       
 -if filter.criterion.match(/is_((not_)?set|today|yesterday)/)
