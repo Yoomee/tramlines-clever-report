@@ -1,12 +1,12 @@
 module CleverReportsHelper
   
   def clever_label_name(field_name, method = nil)
-    name = field_name.gsub(/^clever_stat_/, '')
+    name = field_name.gsub(/^clever_stat_/, '').gsub(/in_pence$/,'')
     method.nil? ? name.gsub(/_/, ' ').downcase : name.send(method)
   end
   
   def model_options_for_clever_report
-    options_for_clever_report(CleverReport::REPORTABLE_MODELS, :method => "pluralize")
+    options_for_clever_report(CleverReport::REPORTABLE_MODELS.sort, :method => "pluralize")
   end
   
   def options_for_clever_report(collection, options = {})
