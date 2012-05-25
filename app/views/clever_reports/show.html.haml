@@ -1,5 +1,12 @@
+-content_for :head do
+  =client_jqgrid_stylesheets
+  =client_jqgrid_javascripts
+
 -title @report.name
-=export_as_table(@report, :results)
+=#export_as_table(@report, :results)
+-fields = fields_for_data_export(@report, :results)
+=jqgrid('Report', "data_export_table", url_for_data_export(@report, :results, :fields => fields), fields, jqgrid_options(@report, :results, :height => 470))
+
 
 -options_panel do
   =back_link

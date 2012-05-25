@@ -1,6 +1,6 @@
 -report ||= form.object
 -if !report.source_name.blank?
-  =form.input :field_names, :as => :check_boxes, :collection => options_for_clever_report(report.possible_field_names.sort, :method => :humanize), :label => report.source_name.pluralize
+  =form.input :field_names, :as => :check_boxes, :collection => options_for_clever_report(report.possible_field_names.sort), :label => report.source_name.pluralize
 
   -report.association_names.each do |association|
     -if !report.clever_stats_for(association).empty?

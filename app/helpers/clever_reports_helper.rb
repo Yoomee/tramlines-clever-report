@@ -1,8 +1,7 @@
 module CleverReportsHelper
   
   def clever_label_name(field_name, method = nil)
-    name = field_name.gsub(/^clever_stat_/, '').gsub(/in_pence$/,'')
-    method.nil? ? name.gsub(/_/, ' ').downcase : name.send(method)
+    CleverReport::clever_label_name(field_name,method)
   end
   
   def model_options_for_clever_report

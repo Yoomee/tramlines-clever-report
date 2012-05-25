@@ -2,6 +2,14 @@ class CleverReport < ActiveRecord::Base
 
   REPORTABLE_MODELS = %w{Contact Donation Event Campaign}
   STEP_TITLES = ["Report name and source", "Include these fields in the results", "Apply these filters"]
+  FIELD_NAMES = {
+    "crm_id" => 'crm_id',
+    "just_giving_id" => 'just_giving_id'
+  }  
+  FIELD_LABELS = {
+    "crm_id" => 'CRM ID',
+    "just_giving_id" => 'Just Giving ID'
+  }  
   
   belongs_to :created_by, :class_name => "Member"
   belongs_to :last_edited_by, :class_name => "Member"
@@ -39,6 +47,25 @@ class CleverReport < ActiveRecord::Base
       source_name.constantize.clever_fields
     end
     
+    def clever_field_name(name)
+      if field_name = CleverReport::FIELD_NAMES[name.to_s]
+        return field_name
+      else
+        name.gsub(/_id$/, '').gsub(/in_pence$/,'')
+      end
+
+    end
+    
+    def clever_label_name(field_name, method = nil)
+      puts "cln: #{field_name}, #{method}"
+      if label_name = CleverReport::FIELD_LABELS[field_name.to_s]
+        return label_name
+      else
+        name = field_name.gsub(/^clever_stat_/, '').gsub(/in_pence$/,'')
+        method.nil? ? name.gsub(/_/, ' ').humanize : name.send(method)
+      end
+    end
+    
   end
 
   def association_names
@@ -51,6 +78,12 @@ class CleverReport < ActiveRecord::Base
 
   def clever_stats_for(association_name)
     source_name.constantize.send("clever_stats_for_#{association_name}")
+  end
+  
+  def fields_for_data_export
+    field_names.collect do |field_name|
+      {:field => self.class::clever_field_name(field_name), :label => self.class::clever_label_name(field_name)}
+    end
   end
 
   def field_names=(value)

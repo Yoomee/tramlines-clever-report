@@ -21,10 +21,10 @@ class CleverReportsController < ApplicationController
     @report = CleverReport.new(params[:clever_report].merge(:created_by => logged_in_member))
     if @report.save
       if @report.last_step?
-        flash[:notice] = "Finished."
-        return redirect_to(@report)
+        redirect_to(@report)
+      else
+        @report.step_num += 1
       end
-      @report.step_num += 1
     end
     render :action => 'new'
   end
