@@ -65,7 +65,11 @@ class CleverFilter < ActiveRecord::Base
   end
   
   def core_args
-    field_type.in?(%w{date time datetime}) ? args.collect {|a| Date.strptime(a, '%d/%m/%Y')} : args
+    if field_name.ends_with?('in_pence')
+      args.collect {|pounds| (pounds.to_f * 100).round(2).to_i}
+    else
+      field_type.in?(%w{date time datetime}) ? args.collect {|a| Date.strptime(a, '%d/%m/%Y')} : args
+    end
   end
   
   def core_criterion
