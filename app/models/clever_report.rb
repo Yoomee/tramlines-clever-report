@@ -2,15 +2,6 @@ class CleverReport < ActiveRecord::Base
 
   REPORTABLE_MODELS = %w{Contact Donation Event Campaign}
   STEP_TITLES = ["Report name and source", "Include these fields in the results", "Apply these filters"]
-  FIELD_NAMES = {
-    "crm_id" => 'crm_id',
-    "just_giving_id" => 'just_giving_id'
-  }  
-  FIELD_LABELS = {
-    "crm_id" => 'CRM ID',
-    "just_giving_id" => 'Just Giving ID',
-    "dob" => "Date of birth"
-  }  
   
   belongs_to :created_by, :class_name => "Member"
   belongs_to :last_edited_by, :class_name => "Member"
@@ -48,22 +39,9 @@ class CleverReport < ActiveRecord::Base
       source_name.constantize.clever_fields
     end
     
-    def clever_field_name(name)
-      if field_name = CleverReport::FIELD_NAMES[name.to_s]
-        return field_name
-      else
-        name.gsub(/_id$/, '').gsub(/_in_pence$/,'')
-      end
-    end
-    
     def clever_label_name(field_name, method = nil)
-      puts "cln: #{field_name}, #{method}"
-      if label_name = CleverReport::FIELD_LABELS[field_name.to_s]
-        return label_name
-      else
-        name = field_name.gsub(/_id$/, '').gsub(/^clever_stat_/, '').gsub(/in_pence$/,'')
-        method.nil? ? name.gsub(/_/, ' ').humanize : name.send(method)
-      end
+      label_name = clever_field_labels[field_name.to_s] || field_name.to_s.gsub(/^clever_stat_/, '')
+      method ? label_name.send(method) : label_name.humanize
     end
     
   end
@@ -78,8 +56,20 @@ class CleverReport < ActiveRecord::Base
     source_name.constantize::associations_for_clever_reports || []
   end
 
+  def source_class
+    source_name.constantize
+  end
+
   def source_name
     read_attribute(:source_name).blank? ? REPORTABLE_MODELS.first : read_attribute(:source_name)
+  end
+
+  def clever_field_name(field_name)
+    if assoc = source_class.reflect_on_association(field_name.gsub(/_id$/, '').to_sym)
+      field_name.gsub(/_id$/, '')
+    else
+      field_name.gsub(/_in_pence$/,'')
+    end
   end
 
   def clever_stats_for(association_name)
@@ -88,7 +78,7 @@ class CleverReport < ActiveRecord::Base
   
   def fields_for_data_export
     field_names.collect do |field_name|
-      {:field => self.class::clever_field_name(field_name), :label => self.class::clever_label_name(field_name)}
+      {:field => clever_field_name(field_name), :label => self.class::clever_label_name(field_name)}
     end
   end
 

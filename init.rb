@@ -1,9 +1,17 @@
 ActiveRecord::Base.class_eval do  
   
+  cattr_accessor :clever_fields, :clever_field_labels  
+  
   class << self
 
-    def clever_fields
-      @clever_fields.blank? ? column_names.reject {|c| c.in? %w{id created_at updated_at}} : @clever_fields
+    def has_clever_fields(*fields)
+      self.clever_field_labels = {}
+      self.clever_fields = []
+      fields.each do |field|
+        name, label = field.is_a?(Array) ? field : [field, field.to_s.humanize]
+        self.clever_field_labels[name.to_s] = label.to_s
+        self.clever_fields << field.to_s
+      end
     end
 
     def custom_clever_options

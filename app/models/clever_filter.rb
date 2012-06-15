@@ -38,7 +38,11 @@ class CleverFilter < ActiveRecord::Base
   end
   
   def association_class
-    source_name.constantize.reflect_on_association(association_name.to_sym).class_name.classify.constantize
+    if assoc = source_name.constantize.reflect_on_association(association_name.to_sym)
+      assoc.class_name.classify.constantize
+    else
+      association_name.classify.constantize
+    end
   end
   
   def association_name
