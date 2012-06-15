@@ -53,7 +53,6 @@ class CleverReport < ActiveRecord::Base
       else
         name.gsub(/_id$/, '').gsub(/_in_pence$/,'')
       end
-
     end
     
     def clever_label_name(field_name, method = nil)
@@ -66,6 +65,12 @@ class CleverReport < ActiveRecord::Base
       end
     end
     
+  end
+  
+  def association_class_names
+    source_name.constantize::associations_for_clever_reports.collect do |assoc_name|
+      source_name.constantize.reflect_on_association(assoc_name.to_sym).class_name.pluralize.underscore
+    end
   end
 
   def association_names

@@ -37,6 +37,10 @@ class CleverFilter < ActiveRecord::Base
     read_attribute(:args).is_a?(Array) ? read_attribute(:args) : [read_attribute(:args)]
   end
   
+  def association_class
+    source_name.constantize.reflect_on_association(association_name.to_sym).class_name.classify.constantize
+  end
+  
   def association_name
     read_attribute(:association_name).blank? ? source_name.pluralize.downcase : read_attribute(:association_name)
   end
@@ -61,7 +65,7 @@ class CleverFilter < ActiveRecord::Base
   
   def clever_field_names
     return [] if association_name.blank?
-    association_name.singularize.classify.constantize.clever_fields
+    association_class.clever_fields
   end
   
   def core_args
@@ -98,9 +102,8 @@ class CleverFilter < ActiveRecord::Base
   
   def field_type
     return nil if association_name.blank? || field_name.blank?
-    klass = association_name.classify.constantize
-    return "custom_select" if klass.custom_clever_options.keys.collect(&:to_s).include?(field_name.to_s)
-    klass.columns.detect{|col| col.name == field_name}.type.to_s
+    return "custom_select" if association_class.custom_clever_options.keys.collect(&:to_s).include?(field_name.to_s)
+    association_class.columns.detect{|col| col.name == field_name}.type.to_s
   end
   
   def has_association_name?

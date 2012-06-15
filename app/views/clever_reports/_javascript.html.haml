@@ -1,5 +1,5 @@
 =#javascript_include_tag 'timepicker.js'
--([report.source_name.pluralize.downcase] + report.association_names).each do |source_name|
+-([report.source_name.pluralize.downcase] + report.association_class_names).each do |source_name|
   =javascript_tag("var #{source_name}_options = \"#{escape_javascript(options_for_clever_field_names(source_name))}\";")
   -source_name.classify.constantize.custom_clever_options.each do |field_name, collection|
     -collection = collection.call if collection.is_a?(Proc)
@@ -11,6 +11,8 @@
   var boolean_criteria = "#{escape_javascript(options_for_select(CleverFilter::BOOLEAN_CRITERIA))}";
   var date_duration_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::DATE_DURATIONS))}";
   var custom_select_criteria = "#{escape_javascript(options_string_for_clever_report(['is', 'is_not']))}";
+  // TODO: Don't do this
+  var addresses_options = locations_options;
   
   var CleverFilter = {
     init_datepickers: function() {
