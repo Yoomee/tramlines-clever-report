@@ -8,7 +8,8 @@ class CleverReport < ActiveRecord::Base
   }  
   FIELD_LABELS = {
     "crm_id" => 'CRM ID',
-    "just_giving_id" => 'Just Giving ID'
+    "just_giving_id" => 'Just Giving ID',
+    "dob" => "Date of birth"
   }  
   
   belongs_to :created_by, :class_name => "Member"
