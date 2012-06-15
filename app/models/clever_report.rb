@@ -62,7 +62,7 @@ class CleverReport < ActiveRecord::Base
       if label_name = CleverReport::FIELD_LABELS[field_name.to_s]
         return label_name
       else
-        name = field_name.gsub(/^clever_stat_/, '').gsub(/in_pence$/,'')
+        name = field_name.gsub(/_id$/, '').gsub(/^clever_stat_/, '').gsub(/in_pence$/,'')
         method.nil? ? name.gsub(/_/, ' ').humanize : name.send(method)
       end
     end
