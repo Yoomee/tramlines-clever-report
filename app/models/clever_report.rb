@@ -51,7 +51,7 @@ class CleverReport < ActiveRecord::Base
       if field_name = CleverReport::FIELD_NAMES[name.to_s]
         return field_name
       else
-        name.gsub(/_id$/, '').gsub(/in_pence$/,'')
+        name.gsub(/_id$/, '').gsub(/_in_pence$/,'')
       end
 
     end
