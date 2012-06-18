@@ -34,14 +34,9 @@ class CleverReport < ActiveRecord::Base
       STEP_TITLES.size
     end
     
-    def possible_field_names(source_name)
-      return [] if source_name.nil?
-      source_name.constantize.clever_fields
-    end
-    
     def clever_label_name(field_name, method = nil)
-      label_name = clever_field_labels[field_name.to_s] || field_name.to_s.gsub(/^clever_stat_/, '')
-      method ? label_name.send(method) : label_name.humanize
+      name = field_name.gsub(/_id$/, '').gsub(/^clever_stat_/, '').gsub(/in_pence$/,'')  
+      method.nil? ? name.gsub(/_/, ' ').humanize : name.send(method)
     end
     
   end
@@ -72,13 +67,17 @@ class CleverReport < ActiveRecord::Base
     end
   end
 
+  def clever_label_name(field_name, method = nil)
+    source_class.clever_field_labels[field_name.to_s] || self.class::clever_label_name(field_name, method)
+  end
+
   def clever_stats_for(association_name)
-    source_name.constantize.send("clever_stats_for_#{association_name}")
+    source_class.send("clever_stats_for_#{association_name}")
   end
   
   def fields_for_data_export
     field_names.collect do |field_name|
-      {:field => clever_field_name(field_name), :label => self.class::clever_label_name(field_name)}
+      {:field => clever_field_name(field_name), :label => clever_label_name(field_name)}
     end
   end
 
@@ -91,7 +90,7 @@ class CleverReport < ActiveRecord::Base
   end
   
   def possible_field_names
-    self.class::possible_field_names(source_name)
+    source_class.clever_fields
   end
   
   def results

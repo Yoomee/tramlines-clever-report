@@ -1,16 +1,16 @@
 ActiveRecord::Base.class_eval do  
   
-  cattr_accessor :clever_fields, :clever_field_labels  
-  
   class << self
-
+    
+    attr_reader :clever_fields, :clever_field_labels
+    
     def has_clever_fields(*fields)
-      self.clever_field_labels = {}
-      self.clever_fields = []
+      @clever_field_labels = {}
+      @clever_fields = []
       fields.each do |field|
-        name, label = field.is_a?(Array) ? field : [field, field.to_s.humanize]
-        self.clever_field_labels[name.to_s] = label.to_s
-        self.clever_fields << field.to_s
+        name, label = (field.is_a?(Array) ? field : [field, field.to_s.humanize])
+        @clever_field_labels[name.to_s] = label.to_s
+        @clever_fields << name.to_s
       end
     end
 
@@ -32,14 +32,6 @@ ActiveRecord::Base.class_eval do
       end
     end
     alias_method :has_clever_reports, :has_clever_reports_with
-    
-    def has_clever_filter(name, options = {})
-      
-    end
-
-    def has_clever_fields_blacklist(blacklist = [])
-      @clever_fields = column_names - (blacklist << "id")
-    end
     
     def has_clever_stat_on(association_name, stat_name, &block)
       stat_name = "clever_stat_#{stat_name.downcase.gsub(/\s/, '_')}"

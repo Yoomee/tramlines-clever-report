@@ -16,6 +16,14 @@ module CleverReportsHelper
     options_hash
   end
   
+  def options_for_possible_clever_field_names(report)
+    options_hash = ActiveSupport::OrderedHash.new
+    report.possible_field_names.each do |name|
+      options_hash[report.clever_label_name(name)] = name
+    end
+    options_hash
+  end  
+  
   def options_string_for_clever_report(collection, options = {})
     options_for_select(options_for_clever_report(collection, options))
   end
@@ -52,7 +60,7 @@ module CleverReportsHelper
       end
       tag_options = {:class => "clever_type_#{column_type}", :value => field_name}
       tag_options[:selected] = "selected" if options[:selected] == field_name
-      out << content_tag(:option, clever_label_name(field_name), tag_options)
+      out << content_tag(:option, klass.clever_field_labels[field_name.to_s], tag_options)
     end
   end
   
