@@ -55,6 +55,8 @@ module CleverReportsHelper
     klass.clever_fields.inject("") do |out, field_name|
       if klass.custom_clever_options.keys.collect(&:to_s).include?(field_name.to_s)
         column_type = "custom_select"
+      elsif field_name == "tag_list"
+        column_type = "tag_list"
       else
         column_type = klass.columns.detect{|col| col.name == field_name}.type.to_s
       end

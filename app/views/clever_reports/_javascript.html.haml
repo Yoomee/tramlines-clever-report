@@ -11,6 +11,7 @@
   var boolean_criteria = "#{escape_javascript(options_for_select(CleverFilter::BOOLEAN_CRITERIA))}";
   var date_duration_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::DATE_DURATIONS))}";
   var custom_select_criteria = "#{escape_javascript(options_string_for_clever_report(['is', 'is_not']))}";
+  var tag_list_criteria = "#{escape_javascript(options_string_for_clever_report(['contains']))}";
   // TODO: Don't do this
   var addresses_options = locations_options;
   
@@ -58,6 +59,8 @@
         field_name_type = "boolean";
       } else if (field_name_type == "custom_select") {
         field_name_type = "custom_select";
+      } else if (field_name_type == "tag_list") {
+        field_name_type = "tag_list";
       } else {
         field_name_type = "number";
       }

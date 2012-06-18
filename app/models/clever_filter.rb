@@ -50,19 +50,23 @@ class CleverFilter < ActiveRecord::Base
   end
   
   def call_string
-    out = has_association_name? ? "#{association_name}_" : ""
-    out << "#{field_name}_" unless field_name.blank?
-    case criterion
-      when "is_today"
-        out << "is_between('#{Date.yesterday}', '#{Date.tomorrow}')"
-      when "is_yesterday"
-        out << "is_between('#{2.days.ago.to_date}', '#{Date.today}')"
-      when "is_in_the_next"
-        out << "is_between('#{Date.yesterday}', '#{args[0].to_i.send(args[1]).from_now.to_date}')"
-      when "is_in_the_last"
-        out << "is_between('#{args[0].to_i.send(args[1]).ago.to_date}', '#{Date.tomorrow}')"
-      else
-        args.nil? ? out : out << "#{core_criterion}('#{core_args.join("', '")}')"
+    if field_name == "tag_list"
+      "tagged_with('#{core_args.join("', '")}')"
+    else
+      out = has_association_name? ? "#{association_name}_" : ""
+      out << "#{field_name}_" unless field_name.blank?
+      case criterion
+        when "is_today"
+          out << "is_between('#{Date.yesterday}', '#{Date.tomorrow}')"
+        when "is_yesterday"
+          out << "is_between('#{2.days.ago.to_date}', '#{Date.today}')"
+        when "is_in_the_next"
+          out << "is_between('#{Date.yesterday}', '#{args[0].to_i.send(args[1]).from_now.to_date}')"
+        when "is_in_the_last"
+          out << "is_between('#{args[0].to_i.send(args[1]).ago.to_date}', '#{Date.tomorrow}')"
+        else
+          args.nil? ? out : out << "#{core_criterion}('#{core_args.join("', '")}')"
+      end
     end
   end
   alias_method :name, :call_string
@@ -103,6 +107,8 @@ class CleverFilter < ActiveRecord::Base
       BOOLEAN_CRITERIA
     when "custom_select"
       ["is", "is_not"]
+    when "tag_list"
+      ["contains"]
     else
       STRING_CRITERIA
     end
@@ -110,6 +116,7 @@ class CleverFilter < ActiveRecord::Base
   
   def field_type
     return nil if association_name.blank? || field_name.blank?
+    return "tag_list" if field_name == "tag_list"    
     return "custom_select" if association_class.custom_clever_options.keys.collect(&:to_s).include?(field_name.to_s)
     association_class.columns.detect{|col| col.name == field_name}.type.to_s
   end
