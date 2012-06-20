@@ -90,7 +90,7 @@ class CleverReport < ActiveRecord::Base
   end
   
   def possible_field_names
-    source_class.clever_fields
+    source_class.clever_fields + source_class.clever_fields_only_results
   end
   
   def results
