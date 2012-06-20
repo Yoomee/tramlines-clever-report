@@ -42,7 +42,11 @@ ActiveRecord::Base.class_eval do
     def add_clever_field_labels(fields)
       @clever_field_labels ||= {}
       fields.each do |field|
-        name, label = (field.is_a?(Array) ? field : [field, field.to_s.humanize])
+        if field.is_a?(Array)
+          name, label = field
+        else
+          name, label = [field, (field.to_s=="tag_list" ? "Tags" : field.to_s.humanize)]
+        end
         @clever_field_labels[name.to_s] = label.to_s
       end      
     end
