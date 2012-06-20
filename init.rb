@@ -1,5 +1,7 @@
 ActiveRecord::Base.class_eval do  
   
+  attr_accessor :clever_report
+  
   class << self
     
     attr_reader :clever_fields, :clever_field_labels
@@ -40,6 +42,11 @@ ActiveRecord::Base.class_eval do
     end
     
   end
+  
+  def clever_association(association_name)
+    eval "#{association_name}.#{clever_report.filters.call_string_for_association(association_name)}"
+  end
+  
   
 end
 

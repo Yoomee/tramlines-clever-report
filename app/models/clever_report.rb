@@ -14,6 +14,10 @@ class CleverReport < ActiveRecord::Base
       call_array.join(".")
     end
     
+    def call_string_for_association(association)
+      association_name_is(association.to_s).collect{|f| f.call_string(false)}.join(".")
+    end
+    
     def call_array
       all.collect(&:call_string)
     end
