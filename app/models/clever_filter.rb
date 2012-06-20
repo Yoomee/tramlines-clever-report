@@ -12,7 +12,10 @@ class CleverFilter < ActiveRecord::Base
   NUMBER_CRITERIA = %w{is_equal_to is_less_than is_less_than_or_equal_to is_greater_than is_greater_than_or_equal_to is_between is_between_inclusive is_not_set}
   DATE_CRITERIA = %w{is_on_or_before is_before is_on_or_after is_between is_between_inclusive is_in_the_next is_in_the_last is_today is_yesterday is_not_set}
   BOOLEAN_CRITERIA = [['Is true','is'], ['Is false','is_not']]
+  CUSTOM_SELECT_CRITERIA = ["is", "is_not"]
+  TAG_LIST_CRITERIA = ['include']
   DATE_DURATIONS = ['days', 'weeks', 'months', 'years']
+
 
   COMPARISON_CONDITIONS = {
     :equals => [:is_equal_to],
@@ -106,9 +109,9 @@ class CleverFilter < ActiveRecord::Base
     when "boolean"
       BOOLEAN_CRITERIA
     when "custom_select"
-      ["is", "is_not"]
+      CUSTOM_SELECT_CRITERIA
     when "tag_list"
-      ["contains"]
+      TAG_LIST_CRITERIA
     else
       STRING_CRITERIA
     end
