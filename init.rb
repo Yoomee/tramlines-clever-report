@@ -4,16 +4,15 @@ ActiveRecord::Base.class_eval do
   
   class << self
     
-    attr_reader :clever_fields, :clever_field_labels
+    attr_reader :clever_fields, :clever_field_labels, :clever_fields_only_results
     
     def has_clever_fields(*fields)
+      options = fields.extract_options!
       @clever_field_labels = {}
       @clever_fields = []
-      fields.each do |field|
-        name, label = (field.is_a?(Array) ? field : [field, field.to_s.humanize])
-        @clever_field_labels[name.to_s] = label.to_s
-        @clever_fields << name.to_s
-      end
+      add_clever_field_labels(fields)
+      @clever_fields = get_clever_field_names(fields)
+      @clever_fields_only_results = get_clever_field_names(options[:only_for_results] || [])
     end
 
     def custom_clever_options
@@ -39,6 +38,28 @@ ActiveRecord::Base.class_eval do
       stat_name = "clever_stat_#{stat_name.downcase.gsub(/\s/, '_')}"
       self.send("clever_stats_for_#{association_name}") << stat_name
       define_method(stat_name, &block)
+    end
+    
+    private
+    def add_clever_field_labels(fields)
+      @clever_field_labels ||= {}
+      fields.each do |field|
+        if field.is_a?(Array)
+          name, label = field
+        else
+          name, label = [field, (field.to_s=="tag_list" ? "Tags" : field.to_s.humanize)]
+        end
+        @clever_field_labels[name.to_s] = label.to_s
+      end      
+    end
+    
+    def get_clever_field_names(fields)
+      field_names = []
+      fields.each do |field|
+        name = (field.is_a?(Array) ? field.first : field)
+        field_names << name.to_s
+      end
+      field_names
     end
     
   end

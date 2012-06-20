@@ -10,8 +10,8 @@
   var date_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::DATE_CRITERIA))}";
   var boolean_criteria = "#{escape_javascript(options_for_select(CleverFilter::BOOLEAN_CRITERIA))}";
   var date_duration_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::DATE_DURATIONS))}";
-  var custom_select_criteria = "#{escape_javascript(options_string_for_clever_report(['is', 'is_not']))}";
-  var tag_list_criteria = "#{escape_javascript(options_string_for_clever_report(['contains']))}";
+  var custom_select_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::CUSTOM_SELECT_CRITERIA))}";
+  var tag_list_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::TAG_LIST_CRITERIA))}";
   // TODO: Don't do this
   if(typeof(locations_options) !== "undefined")
     var addresses_options = locations_options;
