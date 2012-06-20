@@ -13,7 +13,8 @@
   var custom_select_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::CUSTOM_SELECT_CRITERIA))}";
   var tag_list_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::TAG_LIST_CRITERIA))}";
   // TODO: Don't do this
-  var addresses_options = locations_options;
+  if(typeof(locations_options) !== "undefined")
+    var addresses_options = locations_options;
   
   var CleverFilter = {
     init_datepickers: function() {

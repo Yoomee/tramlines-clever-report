@@ -52,11 +52,11 @@ class CleverFilter < ActiveRecord::Base
     read_attribute(:association_name).blank? ? source_name.pluralize.downcase : read_attribute(:association_name)
   end
   
-  def call_string
+  def call_string(include_association_name = true)
     if field_name == "tag_list"
       "tagged_with('#{core_args.join("', '")}')"
     else
-      out = has_association_name? ? "#{association_name}_" : ""
+      out = has_association_name? && include_association_name ? "#{association_name}_" : ""
       out << "#{field_name}_" unless field_name.blank?
       case criterion
         when "is_today"
