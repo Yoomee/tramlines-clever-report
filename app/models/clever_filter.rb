@@ -49,7 +49,7 @@ class CleverFilter < ActiveRecord::Base
   end
   
   def association_name
-    read_attribute(:association_name).blank? ? source_name.pluralize.downcase : read_attribute(:association_name)
+    read_attribute(:association_name).blank? ? source_name.underscore.pluralize.downcase : read_attribute(:association_name)
   end
   
   def call_string(include_association_name = true)
