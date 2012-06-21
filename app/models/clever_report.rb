@@ -45,14 +45,12 @@ class CleverReport < ActiveRecord::Base
     
   end
   
-  def association_class_names
-    source_name.constantize::associations_for_clever_reports.collect do |assoc_name|
-      source_name.constantize.reflect_on_association(assoc_name.to_sym).class_name.pluralize.underscore
-    end
+  def class_name_for_association(assoc_name)
+    source_class.reflect_on_association(assoc_name.to_sym).try(:class_name)
   end
 
   def association_names
-    source_name.constantize::associations_for_clever_reports || []
+    source_class::associations_for_clever_reports || []
   end
 
   def source_class
