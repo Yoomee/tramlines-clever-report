@@ -48,7 +48,7 @@ ActiveRecord::Base.class_eval do
         if field.is_a?(Array)
           name, label = field.collect(&:to_s)
         else
-          name, label = [field, field.to_s.humanize]
+          name, label = [field.to_s, field.to_s.humanize]
         end
         if association = reflect_on_association(name.to_sym)
           if association.belongs_to? && @custom_clever_options[association.primary_key_name.to_s].nil?
