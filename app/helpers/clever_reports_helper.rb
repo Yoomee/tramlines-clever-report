@@ -5,7 +5,7 @@ module CleverReportsHelper
   end
   
   def model_options_for_clever_report
-    options_for_clever_report(CleverReport::REPORTABLE_MODELS.sort, :method => "pluralize")
+    CleverReport::REPORTABLE_MODELS.collect{|m| [m.titleize.humanize.pluralize, m]}
   end
   
   def options_for_clever_report(collection, options = {})

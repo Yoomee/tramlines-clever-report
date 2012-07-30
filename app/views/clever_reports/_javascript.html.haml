@@ -1,7 +1,8 @@
 =#javascript_include_tag 'timepicker.js'
--([report.source_name.pluralize.downcase] + report.association_class_names).each do |source_name|
-  =javascript_tag("var #{source_name}_options = \"#{escape_javascript(options_for_clever_field_names(source_name))}\";")
-  -source_name.classify.constantize.custom_clever_options.each do |field_name, collection|
+-([report.source_name.underscore] + report.association_names).each do |source_name|
+  -source_class_name = report.class_name_for_association(source_name) || report.source_name
+  =javascript_tag("var #{source_name}_options = \"#{escape_javascript(options_for_clever_field_names(source_class_name))}\";")
+  -source_class_name.constantize.custom_clever_options.each do |field_name, collection|
     -collection = collection.call if collection.is_a?(Proc)
     =javascript_tag("var #{source_name}_#{field_name}_options = \"#{escape_javascript(options_for_select(collection))}\";")
 :javascript

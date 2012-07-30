@@ -11,8 +11,8 @@ ActiveRecord::Base.class_eval do
       @clever_field_labels = {}
       @clever_fields = []
       add_clever_field_labels(fields)
-      @clever_fields = get_clever_field_names(fields)
-      @clever_fields_only_results = get_clever_field_names(options[:only_for_results] || [])
+      @clever_fields = fields.collect {|field| get_clever_field_name(field)}
+      @clever_fields_only_results = (options[:only_for_results] || []).collect {|field| field.is_a?(Array) ? field[0].to_s : field.to_s}
     end
 
     def custom_clever_options
@@ -42,24 +42,37 @@ ActiveRecord::Base.class_eval do
     
     private
     def add_clever_field_labels(fields)
+      @custom_clever_options ||= {}
       @clever_field_labels ||= {}
       fields.each do |field|
         if field.is_a?(Array)
-          name, label = field
+          name, label = field.collect(&:to_s)
         else
           name, label = [field, field.to_s.humanize]
         end
-        @clever_field_labels[name.to_s] = label.to_s
+        if association = reflect_on_association(name.to_sym)
+          if association.belongs_to? && @custom_clever_options[association.primary_key_name.to_s].nil?
+            name = association.primary_key_name.to_s
+            collection = association.klass.all.sort_by(&:to_s).inject(ActiveSupport::OrderedHash.new) {|out, c| out[c.to_s] = c.id; out}
+            @custom_clever_options[name] = collection
+          end
+        end
+        @clever_field_labels[name] = label
       end      
     end
     
-    def get_clever_field_names(fields)
-      field_names = []
-      fields.each do |field|
-        name = (field.is_a?(Array) ? field.first : field)
-        field_names << name.to_s
+    def get_clever_field_name(field_or_array)
+      if field_or_array.is_a?(Array)
+        name = field_or_array.first
+      else
+        name = field_or_array
       end
-      field_names
+      if association = reflect_on_association(name.to_sym)
+        if association.belongs_to?
+          name = association.primary_key_name
+        end
+      end
+      name.to_s
     end
     
   end
