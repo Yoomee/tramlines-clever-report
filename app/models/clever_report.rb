@@ -15,7 +15,7 @@ class CleverReport < ActiveRecord::Base
     end
     
     def call_string_for_association(association)
-      association_name_is(association.to_s).collect{|f| f.call_string(false)}.join(".")
+      association_name_is(association.to_s).collect{|f| f.call_string(false)}.join(".").presence || "scoped_all"
     end
     
     def call_array
