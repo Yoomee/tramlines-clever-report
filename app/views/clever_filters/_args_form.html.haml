@@ -4,7 +4,7 @@
 
 -if filter.field_type.in?(%w{date time datetime})
   -input_html[:class] += " datetime"
--elsif filter.field_type == "custom_select"
+-elsif filter.field_type == "custom_select" || filter.field_type == "tag_id"
   :javascript
     $(document).ready(function() {
       $('##{unique_id}_custom_select').html(#{filter.association_name}_#{filter.field_name}_options);
@@ -16,7 +16,7 @@
     =args_fields.input '', :as => :string, :label => false, :input_html => input_html.merge(:value => ''), :wrapper_html => wrapper_html
 -else
   -form.inputs :for => :args do |args_fields|
-    -if filter.field_type == "custom_select"
+    -if filter.field_type == "custom_select" || filter.field_type == "tag_id"
       %li.filter_args
         =args_fields.select '', [], {}, input_html.merge(:id => "#{unique_id}_custom_select")
     -elsif filter.criterion.match(/^is_between/)

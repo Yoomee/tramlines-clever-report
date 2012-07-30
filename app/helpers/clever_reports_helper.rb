@@ -53,12 +53,12 @@ module CleverReportsHelper
   def options_for_clever_field_names(association_name, options = {})
     klass = association_name.to_s == "addresses" ? Location : association_name.classify.constantize
     klass.clever_fields.inject("") do |out, field_name|
-      if klass.custom_clever_options.keys.collect(&:to_s).include?(field_name.to_s)
+      if field_name == "tag_id"
+        column_type = "tag_id"        
+      elsif klass.custom_clever_options.keys.collect(&:to_s).include?(field_name.to_s)
         column_type = "custom_select"
       elsif column = klass.columns.detect{|col| col.name == field_name}
         column_type = column.type.to_s
-      elsif field_name == "tag_list"
-        column_type = "tag_list"        
       else
         column_type = "string"
       end

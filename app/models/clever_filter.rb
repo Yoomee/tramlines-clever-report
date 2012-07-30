@@ -13,7 +13,7 @@ class CleverFilter < ActiveRecord::Base
   DATE_CRITERIA = %w{is_on_or_before is_before is_on_or_after is_between is_between_inclusive is_in_the_next is_in_the_last is_today is_yesterday is_not_set}
   BOOLEAN_CRITERIA = [['Is true','is'], ['Is false','is_not']]
   CUSTOM_SELECT_CRITERIA = ["is", "is_not"]
-  TAG_LIST_CRITERIA = ['include']
+  TAG_ID_CRITERIA = ['include']
   DATE_DURATIONS = ['days', 'weeks', 'months', 'years']
 
 
@@ -53,8 +53,9 @@ class CleverFilter < ActiveRecord::Base
   end
   
   def call_string(include_association_name = true)
-    if field_name == "tag_list"
-      "tagged_with('#{core_args.join("', '")}')"
+    if field_name == "tag_id"
+      out = has_association_name? && include_association_name ? "#{association_name}_" : ""
+      out << "tagging_exists_with_tag_id(#{core_args.first})"
     else
       out = has_association_name? && include_association_name ? "#{association_name}_" : ""
       out << "#{field_name}_" unless field_name.blank?
@@ -110,8 +111,8 @@ class CleverFilter < ActiveRecord::Base
       BOOLEAN_CRITERIA
     when "custom_select"
       CUSTOM_SELECT_CRITERIA
-    when "tag_list"
-      TAG_LIST_CRITERIA
+    when "tag_id"
+      TAG_ID_CRITERIA
     else
       STRING_CRITERIA
     end
@@ -119,7 +120,7 @@ class CleverFilter < ActiveRecord::Base
   
   def field_type
     return nil if association_name.blank? || field_name.blank?
-    return "tag_list" if field_name == "tag_list"    
+    return "tag_id" if field_name == "tag_id"    
     return "custom_select" if association_class.custom_clever_options.keys.collect(&:to_s).include?(field_name.to_s)
     association_class.columns.detect{|col| col.name == field_name}.type.to_s
   end

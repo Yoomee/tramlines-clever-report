@@ -11,7 +11,7 @@
   var boolean_criteria = "#{escape_javascript(options_for_select(CleverFilter::BOOLEAN_CRITERIA))}";
   var date_duration_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::DATE_DURATIONS))}";
   var custom_select_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::CUSTOM_SELECT_CRITERIA))}";
-  var tag_list_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::TAG_LIST_CRITERIA))}";
+  var tag_id_criteria = "#{escape_javascript(options_string_for_clever_report(CleverFilter::TAG_ID_CRITERIA))}";
   // TODO: Don't do this
   if(typeof(locations_options) !== "undefined")
     var addresses_options = locations_options;
@@ -60,8 +60,8 @@
         field_name_type = "boolean";
       } else if (field_name_type == "custom_select") {
         field_name_type = "custom_select";
-      } else if (field_name_type == "tag_list") {
-        field_name_type = "tag_list";
+      } else if (field_name_type == "tag_id") {
+        field_name_type = "tag_id";
       } else {
         field_name_type = "number";
       }
@@ -78,7 +78,7 @@
       }
       var selected_field_name_type = CleverFilter.field_name_input(criterion_select).children(':selected').attr('class').replace('clever_type_', '');
       var args_input_type;
-      if (selected_field_name_type == "custom_select") {
+      if (selected_field_name_type == "custom_select" || selected_field_name_type == "tag_id") {
         args_input_type = "select";
       } else {
         args_input_type = "input";

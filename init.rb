@@ -47,7 +47,7 @@ ActiveRecord::Base.class_eval do
         if field.is_a?(Array)
           name, label = field
         else
-          name, label = [field, (field.to_s=="tag_list" ? "Tags" : field.to_s.humanize)]
+          name, label = [field, field.to_s.humanize]
         end
         @clever_field_labels[name.to_s] = label.to_s
       end      
