@@ -30,4 +30,4 @@
         =args_fields.select '', options_for_select(CleverFilter::DATE_DURATIONS, filter.args[1]), {}, input_html
     -else
       -filter.args.each do |arg|
-        =args_fields.input '', :as => :string, :label => false, :input_html => input_html.merge(:value => arg), :wrapper_html => wrapper_html
+        =args_fields.input '', :as => (filter.field_type == "boolean" ? :hidden : :string), :label => false, :input_html => input_html.merge(:value => arg), :wrapper_html => wrapper_html
