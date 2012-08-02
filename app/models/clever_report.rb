@@ -1,6 +1,6 @@
 class CleverReport < ActiveRecord::Base
 
-  REPORTABLE_MODELS = ["Contact", "Donation", "Event", "EventBooking", "Campaign"]
+  REPORTABLE_MODELS = ["Contact", "Donation", "Event", "EventBooking", "Campaign", "DonationCategory"]
   STEP_TITLES = ["Report name and source", "Include these fields in the results", "Apply these filters"]
   
   belongs_to :created_by, :class_name => "Member"
