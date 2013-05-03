@@ -56,6 +56,8 @@ class CleverFilter < ActiveRecord::Base
     if field_name == "tag_id"
       out = has_association_name? && include_association_name ? "#{association_name}_" : ""
       out << "tagging_exists_with_tag_id(#{core_args.first})"
+    elsif criterion == "contains"
+      out = "regexp('#{field_name}', '#{core_args.join("|")}')"
     else
       out = has_association_name? && include_association_name ? "#{association_name}_" : ""
       out << "#{field_name}_" unless field_name.blank?
