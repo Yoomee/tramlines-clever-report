@@ -136,9 +136,7 @@ class CleverReport < ActiveRecord::Base
     named_scope_chain = filters.call_string
     return source_class.scoped_all if named_scope_chain.blank?
     named_scope_chain << ".group_by_id"
-    res = source_class.instance_eval { eval named_scope_chain }
-    res.each {|r| r.clever_report = self}
-    res
+    source_class.instance_eval { eval named_scope_chain }
   end
   
 end
