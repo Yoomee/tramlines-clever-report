@@ -8,6 +8,7 @@
       %th Created
       %th Last edited
       %th Last run
+      %th
   %tbody
   -@reports.each do |report|
     %tr
@@ -21,6 +22,8 @@
       %td
         =report.last_run_at.try(:strftime,'%d/%m/%y %H:%M')
         ="by #{report.last_run_by}" if report.last_run_by
+      %td
+        =link_to 'Delete', report, :method => :delete, :confirm => 'Are you sure?'
 =will_paginate(@reports)
 -options_panel do
   =back_link

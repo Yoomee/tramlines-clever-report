@@ -5,7 +5,7 @@ class CleverReportsController < ApplicationController
   before_filter :get_report, :except => %w{create index new}
   
   def index
-    @reports = CleverReport.descend_by_created_at.paginate(:page => params[:page], :per_page => 20)
+    @reports = CleverReport.descend_by_last_run_at.paginate(:page => params[:page], :per_page => 20)
   end
   
   def show
