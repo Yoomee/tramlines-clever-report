@@ -111,12 +111,34 @@ class CleverReport < ActiveRecord::Base
     name
   end
   
+  def call_string_for_association(association)
+    association_class = association.to_s.classify.constantize
+    grouped_filters = filters.group_by(&:association_name)
+    
+    # get scopes for chosen association (without e.g. 'donations_' prefix)
+    call_array = (grouped_filters.delete(association.to_s) || []).collect {|f| f.call_string(false)}
+
+    # get scopes for associations that chosen association contains (e.g. 'contact_forename_equals')
+    if reflection = (association_class.reflect_on_association(source_name.underscore.pluralize.to_sym) || association_class.reflect_on_association(source_name.underscore.singularize.to_sym))
+      call_array += (grouped_filters.delete(reflection.name.to_s) || []).collect {|f| "#{reflection.name}_#{f.call_string(false)}"}
+    end
+   
+    # for remaining filters, check for polymorphic associations that chosen association contains (e.g. 'attachable_event_type_id_equals')
+    if reflection = association_class.reflect_on_association(:attachable)
+      call_array += grouped_filters.values.flatten.collect {|f| "attachable_#{f.association_name.singularize}_type_#{f.call_string(false)}"}
+    end
+    
+    call_array.compact.join(".").sub(/^\./, '')
+  end
+  
   private
   def get_results
     named_scope_chain = filters.call_string
-    return source_name.constantize.scoped_all if named_scope_chain.blank?
+    return source_class.scoped_all if named_scope_chain.blank?
     named_scope_chain << ".group_by_id"
-    source_name.constantize.instance_eval { eval named_scope_chain }
+    res = source_class.instance_eval { eval named_scope_chain }
+    res.each {|r| r.clever_report = self}
+    res
   end
   
 end

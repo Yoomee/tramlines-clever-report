@@ -78,7 +78,7 @@ ActiveRecord::Base.class_eval do
   end
   
   def clever_association(association_name)
-    eval "#{association_name}.#{clever_report.filters.call_string_for_association(association_name)}"
+    eval "#{association_name}.#{clever_report.call_string_for_association(association_name)}"
   end
   
   
