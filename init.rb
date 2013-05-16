@@ -29,15 +29,15 @@ ActiveRecord::Base.class_eval do
       self.associations_for_clever_reports = args.flatten.collect(&:to_s)
       associations_for_clever_reports.each do |association_name|
         cattr_accessor("clever_stats_for_#{association_name}")
-        self.send("clever_stats_for_#{association_name}=", [])
+        self.send("clever_stats_for_#{association_name}=", {})
       end
     end
     alias_method :has_clever_reports, :has_clever_reports_with
     
-    def has_clever_stat_on(association_name, stat_name, &block)
-      stat_name = "clever_stat_#{stat_name.downcase.gsub(/\s/, '_')}"
-      self.send("clever_stats_for_#{association_name}") << stat_name
-      define_method(stat_name, &block)
+    def has_clever_stat_on(association_name, stat_name, options = {}, &block)
+      stat_label = options[:label] || stat_name.to_s.humanize
+      self.send("clever_stats_for_#{association_name}")["clever_stat_#{stat_name}"] = stat_label
+      define_method("clever_stat_#{stat_name}", &block)
     end
     
     private

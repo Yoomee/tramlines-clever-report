@@ -5,6 +5,6 @@
   -report.association_names.each do |association|
     -if !report.clever_stats_for(association).empty?
       .association_stats{:id => "#{association}_stats"}
-        =form.input :field_names, :as => :check_boxes, :collection => options_for_clever_report(report.clever_stats_for(association)), :label => association.humanize, :wrapper_html => {:id => "clever_report_field_names_from_#{association}"}
+        =form.input :field_names, :as => :check_boxes, :collection => report.clever_stats_for(association).invert, :label => association.humanize, :wrapper_html => {:id => "clever_report_field_names_from_#{association}"}
     
     
