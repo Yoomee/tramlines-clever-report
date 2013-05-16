@@ -70,11 +70,11 @@ class CleverReport < ActiveRecord::Base
   end
 
   def clever_label_name(field_name, method = nil)
-    source_class.clever_field_labels[field_name.to_s] || self.class::clever_label_name(field_name, method)
+    source_class.clever_stats.values.detect{|k,v| k[field_name]}.try(:[], field_name) || source_class.clever_field_labels[field_name.to_s] || self.class::clever_label_name(field_name, method)
   end
 
   def clever_stats_for(association_name)
-    source_class.send("clever_stats_for_#{association_name}")
+    source_class.clever_stats[association_name.to_s]
   end
   
   def fields_for_data_export

@@ -26,17 +26,18 @@ ActiveRecord::Base.class_eval do
     
     def has_clever_reports_with(*args)
       send(:include, HasCleverReports)
+      cattr_accessor(:clever_stats)
+      self.clever_stats = ActiveSupport::OrderedHash.new
       self.associations_for_clever_reports = args.flatten.collect(&:to_s)
       associations_for_clever_reports.each do |association_name|
-        cattr_accessor("clever_stats_for_#{association_name}")
-        self.send("clever_stats_for_#{association_name}=", {})
+        self.clever_stats[association_name] = ActiveSupport::OrderedHash.new
       end
     end
     alias_method :has_clever_reports, :has_clever_reports_with
     
     def has_clever_stat_on(association_name, stat_name, options = {}, &block)
       stat_label = options[:label] || stat_name.to_s.humanize
-      self.send("clever_stats_for_#{association_name}")["clever_stat_#{stat_name}"] = stat_label
+      self.clever_stats[association_name.to_s]["clever_stat_#{stat_name}"] = stat_label
       define_method("clever_stat_#{stat_name}", &block)
     end
     
