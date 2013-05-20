@@ -53,13 +53,12 @@ class CleverFilter < ActiveRecord::Base
   end
   
   def call_string(include_association_name = true)
+    out = has_association_name? && include_association_name ? "#{association_name}_" : ""
     if field_name == "tag_id"
-      out = has_association_name? && include_association_name ? "#{association_name}_" : ""
       out << "tagging_exists_with_tag_id(#{core_args.first})"
     elsif criterion == "contains"
-      out = "regexp('#{field_name}', '#{core_args.join("|")}')"
+      out << "regexp('#{field_name}', '#{core_args.join("|")}')"
     else
-      out = has_association_name? && include_association_name ? "#{association_name}_" : ""
       out << "#{field_name}_" unless field_name.blank?
       case criterion
         when "is_today"
