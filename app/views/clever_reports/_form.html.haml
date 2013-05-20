@@ -10,3 +10,14 @@
       =form.input :step_num, :as => :hidden
   -form.buttons do
     =form.commit_button report.last_step? ? "Finish" : "Next"
+    
+-if report.step_num == 3
+  .clever_reports_sidebar_help
+    %h4 Tip
+    %p When using the 'Contains' option, you can use the "|" character.
+    %p e.g.
+    %table
+      %tbody
+        %tr
+          %td marathon|run
+          %td 'marathon' OR 'run'
