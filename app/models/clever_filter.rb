@@ -13,7 +13,7 @@ class CleverFilter < ActiveRecord::Base
   DATE_CRITERIA = %w{is_on_or_before is_before is_on_or_after is_between is_between_inclusive is_in_the_next is_in_the_last is_today is_yesterday is_not_set}
   BOOLEAN_CRITERIA = [['Is true','is'], ['Is false','is_not']]
   CUSTOM_SELECT_CRITERIA = ["is", "is_not"]
-  TAG_ID_CRITERIA = ['include']
+  TAG_ID_CRITERIA = ['include', 'does_not_include']
   DATE_DURATIONS = ['days', 'weeks', 'months', 'years']
 
 
@@ -55,7 +55,7 @@ class CleverFilter < ActiveRecord::Base
   def call_string(include_association_name = true)
     out = has_association_name? && include_association_name ? "#{association_name}_" : ""
     if field_name == "tag_id"
-      out << "tagging_exists_with_tag_id(#{core_args.first})"
+      out << "tagging_#{'does_not_' if criterion=='does_not_include'}exists_with_tag_id(#{core_args.first})"
     elsif criterion == "contains"
       out << "regexp('#{field_name}', '#{core_args.join("|")}')"
     else
