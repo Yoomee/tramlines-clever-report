@@ -62,7 +62,9 @@ class CleverReport < ActiveRecord::Base
   end
 
   def clever_field_name(field_name)
-    if assoc = source_class.reflect_on_association(field_name.gsub(/_id$/, '').to_sym)
+    if source_name == 'Contact' && field_name == 'organisation_name'
+      'organisation_name_for_clever_report'
+    elsif assoc = source_class.reflect_on_association(field_name.gsub(/_id$/, '').to_sym)
       field_name.gsub(/_id$/, '')
     else
       field_name.gsub(/_in_pence$/,'')
@@ -78,7 +80,7 @@ class CleverReport < ActiveRecord::Base
   end
   
   def fields_for_data_export
-    field_names.collect do |field_name|
+    (field_names - ['organisation_members']).collect do |field_name|
       {:field => clever_field_name(field_name), :label => clever_label_name(field_name)}
     end
   end
@@ -132,11 +134,19 @@ class CleverReport < ActiveRecord::Base
   end
   
   private
+  def add_organisation_members(results)
+    members = results.collect do |contact| 
+      contact.organisation_contacts.collect {|m| m.organisation_name_for_clever_report = contact.organisation_name; m}
+    end
+    results + members.flatten.compact
+  end
+  
   def get_results
     named_scope_chain = filters.call_string
     return source_class.scoped_all if named_scope_chain.blank?
     named_scope_chain << ".group_by_id"
-    source_class.instance_eval { eval named_scope_chain }
+    results = source_class.instance_eval { eval named_scope_chain }
+    field_names.include?('organisation_members') ? add_organisation_members(results) : results
   end
   
 end
