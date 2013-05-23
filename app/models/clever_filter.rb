@@ -36,6 +36,8 @@ class CleverFilter < ActiveRecord::Base
   
   ALL_CONDITIONS = COMPARISON_CONDITIONS.merge(WILDCARD_CONDITIONS).merge(BOOLEAN_CONDITIONS)
   
+  validate :enough_args_for_between_criteria
+  
   def args
     read_attribute(:args).is_a?(Array) ? read_attribute(:args) : [read_attribute(:args)]
   end
@@ -128,6 +130,13 @@ class CleverFilter < ActiveRecord::Base
   
   def has_association_name?
     !association_name.blank? && !(association_name.underscore.singularize == report.source_name.underscore)
+  end
+  
+  private
+  def enough_args_for_between_criteria
+    if criterion.starts_with?('is_between')
+      errors.add(:args, 'needs 2 arguments') if args.size < 2 || args.any?(&:blank?)
+    end
   end
   
 end
